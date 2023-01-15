@@ -22,4 +22,15 @@ mltvrs_configure_project(PREFIX MLTVRS REPORT_ALL TRUE)
 # Create Targets #
 ##################
 
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs)
+set(MLTVRS_HPP ${CMAKE_CURRENT_LIST_DIR}/mltvrs/multiverse.hpp)
+set(MLTVRS_IPP)
+set(MLTVRS_CPP)
+
+add_library(mltvrs INTERFACE ${MLTVRS_HPP} ${MLTVRS_IPP} ${MLTVRS_CPP})
+target_include_directories(mltvrs INTERFACE ${CMAKE_CURRENT_LIST_DIR})
+
+#####################
+# Add Sub-Libraries #
+#####################
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs/shop)

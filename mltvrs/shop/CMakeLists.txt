@@ -16,5 +16,5 @@ if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
 
     add_executable(test_stripe ${CMAKE_CURRENT_LIST_DIR}/test/test_stripe.cpp)
     target_compile_definitions(test_stripe PRIVATE CATCH_CONFIG_PREFIX_ALL)
-    target_link_libraries(test_stripe PRIVATE Catch2::Catch2WithMain)
+    target_link_libraries(test_stripe PRIVATE mltvrs_shop Catch2::Catch2WithMain)
 endif()
