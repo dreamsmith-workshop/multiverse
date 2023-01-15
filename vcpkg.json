@@ -5,6 +5,7 @@
         "boost",
         "fmt",
         "cpprestsdk",
-        "catch2"
+        "catch2",
+        "ms-gsl"
     ]
 }
