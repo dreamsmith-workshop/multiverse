@@ -18,3 +18,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 mltvrs_configure_project(PREFIX MLTVRS REPORT_ALL TRUE)
 
+##################
+# Create Targets #
+##################
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs)
