@@ -14,6 +14,8 @@ function(mltvrs_configure_project)
         endif()
     endmacro()
 
+    mltvrs_report_option(ENABLE_TESTING)
+
     if(DEFINED ${PARSED_PREFIX}_STDLIB AND NOT ${PARSED_PREFIX}_STDLIB STREQUAL "default")
         if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             set(
