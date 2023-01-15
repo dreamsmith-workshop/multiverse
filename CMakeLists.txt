@@ -16,6 +16,5 @@ option(MLTVRS_ENABLE_STATIC_STDLIB                 OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-mltvrs_configure_project(PREFIX MLTVRS)
-mltvrs_report_project_configurations(PREFIX MLTVRS)
+mltvrs_configure_project(PREFIX MLTVRS REPORT_ALL TRUE)
 
