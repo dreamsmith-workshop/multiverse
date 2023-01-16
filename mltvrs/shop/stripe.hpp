@@ -8,6 +8,9 @@
 
 namespace mltvrs::shop::stripe {
 
+    /**
+     * @brief A Stripe API key.
+     */
     class api_key
     {
         public:
