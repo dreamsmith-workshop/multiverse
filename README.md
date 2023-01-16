@@ -33,7 +33,7 @@ This project has the following configuration options:
 | `MLTVRS_DISABLE_EXCEPTIONS`                   | boolean | Disable exceptions                  |
 | `MLTVRS_DISABLE_RTTI`                         | boolean | Disable runtime type information    |
 
-Boolean options default to `OFF`, and other options default to undefined.
+Boolean options default to `OFF`, and other options default to undefined. When unspecified, Standard Library options take the toolchain default.
 
 The `MLTVRS_ENABLE_TESTING` option does not enable unit test by itself; this project also respects `cmake`'s `ENABLE_TESTING` option. Both options need to be enabled to build and run unit tests.
 
