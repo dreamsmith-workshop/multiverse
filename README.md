@@ -4,7 +4,7 @@ This repository contains general-purpose `c++` utilities.
 
 # Build
 
-This project uses `cmake` for its build and package specifications. It includes a `vcpkg` manifest for `vcpkg` integration.
+This project uses `cmake` for its build and package specifications. It includes a `vcpkg` manifest for `vcpkg` integration. See [`cmake` documentation](https://cmake.org/documentation/) and [`vcpkg` documentation](https://vcpkg.io/en/docs/README.html) for details.
 
 To run a basic build and install, ensure prerequisites are met, and run the following:
 ```
