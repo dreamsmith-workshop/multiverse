@@ -46,7 +46,23 @@ Then, when configuring this project, ensure the `vcpkg` toolchain file is used a
 
 #### VSCode
 
-It's possible to direct `VSCode` to the `vcpkg` toolchain file. In `VSCode` settings, under `cmake.configureSettings`, add the following entry:
+It's possible to direct `VSCode` to the `vcpkg` toolchain file via settings, or to create specific build kits that use `vcpkg` for a particular workspace.
+
+##### Build Kit
+
+This method requires the [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) extension from Microsoft.
+
+To create specific `vcpkg` build kits on a per-workspace basis, add a build kit entry to `.vscode/cmake-kits.json` in that workspace as follows:
+```json
+{
+    "name": "a-fun-name",
+    "toolchainFile": "<vcpkg-repo-root>/scripts/buildsystems/vcpkg.cmake"
+}
+```
+
+##### Settings Redirect
+
+To direct `VSCode` to `vcpkg`, in `VSCode` settings, under `cmake.configureSettings`, add the following entry:
 ```json
 "CMAKE_TOOLCHAIN_FILE": "<vcpkg-repo-root>/scripts/buildsystems/vcpkg.cmake"
 ```
