@@ -23,15 +23,17 @@ namespace mltvrs::shop::stripe {
                 live
             };
 
-            constexpr api_key(mode op_mode, rfc4648_literal_type key) noexcept;
+            constexpr api_key(mode op_mode, const rfc4648_literal_type& key) noexcept;
             constexpr api_key(mode op_mode, const rfc4648_string_type& key) noexcept;
 
-            [[nodiscard]] constexpr auto deploy_mode() const noexcept { return m_mode; }
-            constexpr void               deploy_mode(mode op_mode) noexcept { m_mode = op_mode; }
+            [[nodiscard]] constexpr auto& deploy_mode() const noexcept { return m_mode; }
+            [[nodiscard]] constexpr auto& deploy_mode() noexcept { return m_mode; }
+            [[nodiscard]] constexpr auto& key_digits() const noexcept { return m_key; }
+            [[nodiscard]] constexpr auto& key_digits() noexcept { return m_key; }
             // NOLINTBEGIN(bugprone-exception-escape): string sizes fixed by design
-            [[nodiscard]] constexpr auto hex_digits() const noexcept -> rfc4648_string_type;
-            constexpr void               hex_digits(rfc4648_literal_type key) noexcept;
-            [[nodiscard]] constexpr auto full_string() const noexcept -> full_string_type;
+            constexpr void                assign_key(const rfc4648_literal_type& key) noexcept;
+            constexpr void                assign_key(const rfc4648_string_type& key) noexcept;
+            [[nodiscard]] constexpr auto  full_string() const noexcept -> full_string_type;
             // NOLINTEND(bugprone-exception-escape)
 
         private:

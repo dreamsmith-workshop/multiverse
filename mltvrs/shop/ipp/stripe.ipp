@@ -1,6 +1,8 @@
 #include <gsl/gsl>
 
-constexpr mltvrs::shop::stripe::api_key::api_key(mode op_mode, rfc4648_literal_type key) noexcept
+constexpr mltvrs::shop::stripe::api_key::api_key(
+    mode                        op_mode,
+    const rfc4648_literal_type& key) noexcept
     : m_key{key.data(), key.size()},
       m_mode{op_mode}
 {
@@ -16,15 +18,14 @@ constexpr mltvrs::shop::stripe::api_key::api_key(
     Ensures(m_key.size() == m_key.capacity());
 }
 
-[[nodiscard]] constexpr auto mltvrs::shop::stripe::api_key::hex_digits() const noexcept
-    -> rfc4648_string_type
-{
-    return {m_key.data(), m_key.capacity()};
-}
-
-constexpr void mltvrs::shop::stripe::api_key::hex_digits(rfc4648_literal_type key) noexcept
+constexpr void mltvrs::shop::stripe::api_key::assign_key(const rfc4648_literal_type& key) noexcept
 {
     m_key.assign(key.data(), key.size());
+}
+
+constexpr void mltvrs::shop::stripe::api_key::assign_key(const rfc4648_string_type& key) noexcept
+{
+    m_key = key;
 }
 
 [[nodiscard]] constexpr auto mltvrs::shop::stripe::api_key::full_string() const noexcept
