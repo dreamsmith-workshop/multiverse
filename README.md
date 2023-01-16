@@ -26,7 +26,7 @@ and optionally:
 - `git`
 - `vcpkg`
 
-This project depends on the libraries specified in the [pakcage manifest](vcpkg.json). `vcpkg` can automatically manage meeting those dependencies. See [Microsoft documentation](https://vcpkg.io/en/getting-started.html) for details.
+This project depends on the libraries specified in the [package manifest](vcpkg.json). `vcpkg` can automatically manage meeting those dependencies. See [Microsoft documentation](https://vcpkg.io/en/getting-started.html) for details.
 
 ### Environment Setup
 
