@@ -17,6 +17,26 @@ where:
 - building the `install` target requires privilege elevation in most cases
     - when elevation isn't required to `install`, it may be done without separately building everything else
 
+## Options
+
+This project has the following configuration options:
+|                     Option                     |   Type   |                Notes                |
+|:----------------------------------------------:|:--------:|:-----------------------------------:|
+| `MLTVRS_ENABLE_TESTING`                        | boolean  | Explicitly enable project unit test |
+| `MLTVRS_STDLIB`                                | string   | The Standard Library to use         |
+| `MLTVRS_STDLIB_PATH`                           | path     | Explicit path to Standard Library   |
+| `MLTVRS_STDLIB_INCLUDE`                        | path     | Explicit Standard Library include   |
+| `MLTVRS_ENABLE_STATIC_STDLIB`                  | boolean  | Statically link Standard Library    |
+| `MLTVRS_ENABLE_WALL`                           | boolean  | Enable strict warnings              |
+| `MLTVRS_ENABLE_WERROR`                         | boolean  | Treat warnings as errors            |
+| `MLTVRS_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS`  | boolean  | Longer concepts backtrace           |
+| `MLTVRS_DISABLE_EXCEPTIONS`                    | boolean  | Disable exceptions                  |
+| `MLTVRS_DISABLE_RTTI`                          | boolean  | Disable runtime type information    |
+
+Boolean options default to `OFF`, and other options default to undefined.
+
+The `MLTVRS_ENABLE_TESTING` option does not enable unit test by itself; this project also respects `cmake`'s `ENABLE_TESTING` option. Both options need to be enabled to build and run unit tests.
+
 ## Prerequisites
 
 This project requires the following tools:
