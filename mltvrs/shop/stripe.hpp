@@ -29,7 +29,6 @@ namespace mltvrs::shop::stripe {
             [[nodiscard]] constexpr auto& deploy_mode() const noexcept { return m_mode; }
             [[nodiscard]] constexpr auto& deploy_mode() noexcept { return m_mode; }
             [[nodiscard]] constexpr auto& key_digits() const noexcept { return m_key; }
-            [[nodiscard]] constexpr auto& key_digits() noexcept { return m_key; }
             // NOLINTBEGIN(bugprone-exception-escape): string sizes fixed by design
             constexpr void                assign_key(const rfc4648_literal_type& key) noexcept;
             constexpr void                assign_key(const rfc4648_string_type& key) noexcept;
