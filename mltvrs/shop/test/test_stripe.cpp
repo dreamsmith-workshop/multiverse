@@ -19,10 +19,10 @@ namespace {
             'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
             'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
 
-        static auto mt   = std::mt19937{};
+        static auto gen  = std::mt19937{};
         static auto dist = std::uniform_int_distribution<std::size_t>{0, table.size() - 1};
 
-        return dist(mt);
+        return dist(gen);
     }
 
     template<std::size_t Length>
@@ -46,9 +46,21 @@ CATCH_SCENARIO("payment session request message builds correctly")
             stripe::api_key::type::priv,
             stripe::api_key::mode::test,
             random_rfc4648<stripe::api_key::rfc4648_chars>()};
+        const auto success_url = web::uri{"https://example.com/success"};
+        const auto cancel_url  = web::uri{"https://example.com/cancel"};
+        const auto line_items  = std::vector{
+            stripe::line_item{ "first", GENERATE(take(1, random(1u, 10u)))},
+            stripe::line_item{"second", GENERATE(take(1, random(1u, 10u)))},
+            stripe::line_item{ "third", GENERATE(take(1, random(1u, 10u)))}
+        };
 
-        CATCH_THEN("constructing a payment session request message creates the proper JSON payload")
+        CATCH_THEN("constructing a payment session request preserves initializing values")
         {
+            const auto test_value = stripe::checkout_request{success_url, cancel_url, line_items};
+
+            CATCH_REQUIRE(test_value.success_url() == success_url);
+            CATCH_REQUIRE(test_value.cancel_url() == cancel_url);
+            CATCH_REQUIRE(test_value.line_items() == line_items);
         }
     }
 }

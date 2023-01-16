@@ -44,3 +44,28 @@ constexpr void mltvrs::shop::stripe::api_key::assign_key(const rfc4648_string_ty
 
     return ret;
 }
+
+auto mltvrs::shop::stripe::checkout_request::insert(auto&&... args) -> iterator
+{
+    return m_line_items.insert(std::forward<decltype(args)>(args)...);
+}
+
+auto mltvrs::shop::stripe::checkout_request::emplace(auto&&... args) -> iterator
+{
+    return m_line_items.emplace(std::forward<decltype(args)>(args)...);
+}
+
+void mltvrs::shop::stripe::checkout_request::push_back(auto&& value)
+{
+    return m_line_items.push_back(std::forward<decltype(value)>(value));
+}
+
+void mltvrs::shop::stripe::checkout_request::emplace_back(auto&&... args)
+{
+    return m_line_items.emplace_back(std::forward<decltype(args)>(args)...);
+}
+
+void mltvrs::shop::stripe::checkout_request::resize(auto&&... args)
+{
+    return m_line_items.resize(std::forward<decltype(args)>(args)...);
+}

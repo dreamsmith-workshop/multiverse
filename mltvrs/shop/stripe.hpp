@@ -6,6 +6,8 @@
 
 #include <mltvrs/string_literal.hpp>
 
+#include <cpprest/uri.h>
+
 namespace mltvrs::shop::stripe {
 
     /**
@@ -91,6 +93,101 @@ namespace mltvrs::shop::stripe {
             rfc4648_string_type m_key;
             type                m_type;
             mode                m_mode;
+    };
+
+    class line_item
+    {
+        public:
+            line_item(std::string price_ident, unsigned quant) noexcept;
+
+            [[nodiscard]] auto& price_id() const noexcept { return m_price_id; }
+            [[nodiscard]] auto& price_id() noexcept { return m_price_id; }
+            [[nodiscard]] auto& quantity() const noexcept { return m_quantity; }
+            [[nodiscard]] auto& quantity() noexcept { return m_quantity; }
+
+            [[nodiscard]] friend bool
+            operator==(const line_item& lhs, const line_item& rhs) noexcept = default;
+
+        private:
+            std::string m_price_id;
+            unsigned    m_quantity;
+    };
+
+    class checkout_request
+    {
+        private:
+            using line_items_storage = std::vector<line_item>;
+
+        public:
+            using value_type             = line_items_storage::value_type;
+            using size_type              = line_items_storage::size_type;
+            using difference_type        = line_items_storage::difference_type;
+            using reference              = line_items_storage::reference;
+            using const_reference        = line_items_storage::const_reference;
+            using pointer                = line_items_storage::pointer;
+            using const_pointer          = line_items_storage::const_pointer;
+            using iterator               = line_items_storage::iterator;
+            using const_iterator         = line_items_storage::const_iterator;
+            using reverse_iterator       = line_items_storage::reverse_iterator;
+            using const_reverse_iterator = line_items_storage::const_reverse_iterator;
+
+            checkout_request(web::uri success, web::uri cancel, line_items_storage items) noexcept;
+
+            [[nodiscard]] auto& success_url() const noexcept { return m_success_url; }
+            [[nodiscard]] auto& success_url() noexcept { return m_success_url; }
+            [[nodiscard]] auto& cancel_url() const noexcept { return m_cancel_url; }
+            [[nodiscard]] auto& cancel_url() noexcept { return m_cancel_url; }
+            [[nodiscard]] auto& line_items() const noexcept { return m_line_items; }
+            [[nodiscard]] auto& line_items() noexcept { return m_line_items; }
+
+            [[nodiscard]] auto& at(size_type pos) const { return m_line_items.at(pos); }
+            [[nodiscard]] auto& at(size_type pos) { return m_line_items.at(pos); }
+            [[nodiscard]] auto  operator[](size_type pos) const noexcept -> const_reference;
+            [[nodiscard]] auto& operator[](size_type pos) noexcept { return m_line_items[pos]; }
+            [[nodiscard]] auto& front() const noexcept { return m_line_items.front(); }
+            [[nodiscard]] auto& front() noexcept { return m_line_items.front(); }
+            [[nodiscard]] auto& back() const noexcept { return m_line_items.back(); }
+            [[nodiscard]] auto& back() noexcept { return m_line_items.back(); }
+            [[nodiscard]] auto  data() const noexcept { return m_line_items.data(); }
+            [[nodiscard]] auto  data() noexcept { return m_line_items.data(); }
+
+            [[nodiscard]] auto cbegin() const noexcept { return m_line_items.cbegin(); }
+            [[nodiscard]] auto begin() const noexcept { return m_line_items.begin(); }
+            [[nodiscard]] auto begin() noexcept { return m_line_items.begin(); }
+            [[nodiscard]] auto cend() const noexcept { return m_line_items.cend(); }
+            [[nodiscard]] auto end() const noexcept { return m_line_items.end(); }
+            [[nodiscard]] auto end() noexcept { return m_line_items.end(); }
+            [[nodiscard]] auto crbegin() const noexcept { return m_line_items.crbegin(); }
+            [[nodiscard]] auto rbegin() const noexcept { return m_line_items.rbegin(); }
+            [[nodiscard]] auto rbegin() noexcept { return m_line_items.rbegin(); }
+            [[nodiscard]] auto crend() const noexcept { return m_line_items.crend(); }
+            [[nodiscard]] auto rend() const noexcept { return m_line_items.rend(); }
+            [[nodiscard]] auto rend() noexcept { return m_line_items.rend(); }
+
+            [[nodiscard]] auto empty() const noexcept { return m_line_items.empty(); }
+            [[nodiscard]] auto size() const noexcept { return m_line_items.size(); }
+            [[nodiscard]] auto max_size() const noexcept { return m_line_items.max_size(); }
+            void               reserve(size_type new_cap) { m_line_items.reserve(new_cap); }
+            [[nodiscard]] auto capacity() const noexcept { return m_line_items.capacity(); }
+            void               shrink_to_fit() { m_line_items.shrink_to_fit(); }
+
+            void clear() noexcept { m_line_items.clear(); }
+            auto insert(auto&&... args) -> iterator;
+            auto emplace(auto&&... args) -> iterator;
+            auto erase(auto... args) noexcept { return m_line_items.erase(args...); }
+            void push_back(auto&& value);
+            void emplace_back(auto&&... args);
+            void pop_back() noexcept { m_line_items.pop_back(); }
+            void resize(auto&&... args);
+            void swap(checkout_request& other) noexcept;
+
+            [[nodiscard]] friend bool
+            operator==(const checkout_request& lhs, const checkout_request& rhs) noexcept = default;
+
+        private:
+            web::uri           m_success_url;
+            web::uri           m_cancel_url;
+            line_items_storage m_line_items;
     };
 
 } // namespace mltvrs::shop::stripe
