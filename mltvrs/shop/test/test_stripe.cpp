@@ -43,6 +43,7 @@ CATCH_SCENARIO("payment session request message builds correctly")
     CATCH_GIVEN("an API key, the success and failure URLs, and the line items")
     {
         const auto api_key = stripe::api_key{
+            stripe::api_key::type::priv,
             stripe::api_key::mode::test,
             random_rfc4648<stripe::api_key::rfc4648_chars>()};
 

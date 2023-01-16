@@ -24,6 +24,12 @@ namespace mltvrs::shop::stripe {
             //! Stripe API key string, including the Stripe prefix.
             using full_string_type     = boost::static_string<rfc4648_chars + prefix_chars>;
 
+            //! API key type.
+            enum class type {
+                pub, //!< API public key.
+                priv //!< API private key.
+            };
+
             //! API key access mode.
             enum class mode {
                 test, //!< Testing-only API mode.
@@ -33,13 +39,14 @@ namespace mltvrs::shop::stripe {
             /**
              * @brief Construct an API key in the given access mode with the given key string.
              *
+             * @param k_type  The API key type this is.
              * @param op_mode The API access mode this key is for.
              * @param key     The RFC-4648 key string.
              *
              * @{
              */
-            constexpr api_key(mode op_mode, const rfc4648_literal_type& key) noexcept;
-            constexpr api_key(mode op_mode, const rfc4648_string_type& key) noexcept;
+            constexpr api_key(type k_type, mode op_mode, const rfc4648_literal_type& key) noexcept;
+            constexpr api_key(type k_type, mode op_mode, const rfc4648_string_type& key) noexcept;
             //! @}
 
             /**
@@ -51,6 +58,8 @@ namespace mltvrs::shop::stripe {
              *
              * @{
              */
+            [[nodiscard]] constexpr auto& key_type() const noexcept { return m_type; }
+            [[nodiscard]] constexpr auto& key_type() noexcept { return m_type; }
             [[nodiscard]] constexpr auto& deploy_mode() const noexcept { return m_mode; }
             [[nodiscard]] constexpr auto& deploy_mode() noexcept { return m_mode; }
             [[nodiscard]] constexpr auto& key_digits() const noexcept { return m_key; }
@@ -80,6 +89,7 @@ namespace mltvrs::shop::stripe {
 
         private:
             rfc4648_string_type m_key;
+            type                m_type;
             mode                m_mode;
     };
 
