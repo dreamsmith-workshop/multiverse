@@ -25,6 +25,7 @@ constexpr void mltvrs::shop::stripe::api_key::assign_key(const rfc4648_literal_t
 
 constexpr void mltvrs::shop::stripe::api_key::assign_key(const rfc4648_string_type& key) noexcept
 {
+    Expects(key.size() == m_key.capacity());
     m_key = key;
 }
 
