@@ -40,12 +40,8 @@ namespace {
 
 CATCH_SCENARIO("payment session request message builds correctly")
 {
-    CATCH_GIVEN("an API key, the success and failure URLs, and the line items")
+    CATCH_GIVEN("success and failure URLs, and the line items")
     {
-        const auto api_key = stripe::api_key{
-            stripe::api_key::type::priv,
-            stripe::api_key::mode::test,
-            random_rfc4648<stripe::api_key::rfc4648_chars>()};
         const auto success_url = web::uri{"https://example.com/success"};
         const auto cancel_url  = web::uri{"https://example.com/cancel"};
         const auto line_items  = std::vector{
@@ -61,6 +57,18 @@ CATCH_SCENARIO("payment session request message builds correctly")
             CATCH_REQUIRE(test_value.success_url() == success_url);
             CATCH_REQUIRE(test_value.cancel_url() == cancel_url);
             CATCH_REQUIRE(test_value.line_items() == line_items);
+        }
+
+        CATCH_AND_GIVEN("an API key")
+        {
+            const auto api_key = stripe::api_key{
+                stripe::api_key::type::priv,
+                stripe::api_key::mode::test,
+                random_rfc4648<stripe::api_key::rfc4648_chars>()};
+
+            CATCH_THEN("creating an HTTP request generates a properly-formed request")
+            {
+            }
         }
     }
 }
