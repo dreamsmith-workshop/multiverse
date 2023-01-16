@@ -1,3 +1,4 @@
+#include <gsl/gsl>
 
 constexpr mltvrs::shop::stripe::api_key::api_key(mode op_mode, rfc4648_literal_type key) noexcept
     : m_key{key.data(), key.size()},
