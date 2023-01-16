@@ -13,9 +13,9 @@ To run a basic build and install, ensure prerequisites are met, and run the foll
 > cmake --build <build-artifacts-dir> --target install
 ```
 where:
-    - `<build-artifacts-dir>` is a directory outside of `<repo-root>`
-    - building the `install` target requires privilege elevation in most cases
-        - when elevation isn't required to `install`, it may be done without separately building everything else
+- `<build-artifacts-dir>` is a directory outside of `<repo-root>`
+- building the `install` target requires privilege elevation in most cases
+    - when elevation isn't required to `install`, it may be done without separately building everything else
 
 ## Prerequisites
 
