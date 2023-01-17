@@ -307,6 +307,14 @@ namespace mltvrs::shop::stripe {
 
     namespace http {
 
+        /**
+         * @brief Convert a given payload into an HTTP request.
+         *
+         * @param key     The API key to use for the HTTP request.
+         * @param payload The payload to convert into an HTTP request.
+         *
+         * @return Returns the built HTTP request.
+         */
         [[nodiscard]] auto make_request(const api_key& key, const auto& payload)
             -> boost::beast::http::request<boost::beast::http::string_body>;
 
