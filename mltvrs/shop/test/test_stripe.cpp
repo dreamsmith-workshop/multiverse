@@ -22,7 +22,7 @@ namespace {
         static auto gen  = std::mt19937{};
         static auto dist = std::uniform_int_distribution<std::size_t>{0, table.size() - 1};
 
-        return dist(gen);
+        return table[dist(gen)];
     }
 
     template<std::size_t Length>
