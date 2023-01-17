@@ -1,6 +1,15 @@
 #include <gsl/gsl>
 
-#include <mltvrs/ietf/rfc4648.hpp>
+namespace mltvrs::shop::stripe::detail {
+
+    [[nodiscard]] auto make_http_get(
+        const web::uri& host,
+        const web::uri& target,
+        const api_key&  key,
+        std::string     payload) -> boost::beast::http::request<boost::beast::http::string_body>;
+    [[nodiscard]] auto serialize_payload(const checkout_request& request) -> std::string;
+
+} // namespace mltvrs::shop::stripe::detail
 
 constexpr mltvrs::shop::stripe::api_key::api_key(
     type                        k_type,
@@ -75,20 +84,14 @@ void mltvrs::shop::stripe::checkout_request::resize(auto&&... args)
 [[nodiscard]] auto mltvrs::shop::stripe::http::make_request(const api_key& key, const auto& payload)
     -> boost::beast::http::request<boost::beast::http::string_body>
 {
-    namespace beast = boost::beast;
-
     using payload_type = std::remove_cvref_t<decltype(payload)>;
-    if constexpr(std::same_as<payload_type, checkout_request>) {
-        auto ret = boost::beast::http::request<boost::beast::http::string_body>{
-            beast::http::verb::get,
-            "/v1/checkout/sessions",
-            20};
-        ret.set(beast::http::field::host, "api.stripe.com");
-        ret.set(
-            beast::http::field::authorization,
-            fmt::format("Basic {}", ietf::encode_base64(key.full_string())));
 
-        return ret;
+    if constexpr(std::same_as<payload_type, checkout_request>) {
+        return detail::make_http_get(
+            "api.stripe.com",
+            "/v1/checkout/sessions",
+            key,
+            detail::serialize_payload(payload));
     } else {
         // the condition cannot be simply `false` as that fails to compile, so make it impossible
         static_assert(std::same_as<payload_type, checkout_request>, "unhandled payload type");
