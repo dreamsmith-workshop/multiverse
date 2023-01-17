@@ -98,16 +98,43 @@ namespace mltvrs::shop::stripe {
             mode                m_mode;
     };
 
+    /**
+     * @brief A line item in a shopping cart.
+     */
     class line_item
     {
         public:
+            /**
+             * @brief Construct a line item from its price ID and quantity.
+             *
+             * @param price_ident The item's price ID.
+             * @param quant       The number of items in the cart.
+             */
             line_item(std::string price_ident, unsigned quant) noexcept;
 
+            /**
+             * @name Properties
+             *
+             * @brief Access line item properties.
+             *
+             * @return Returns the requested line item property.
+             *
+             * @{
+             */
             [[nodiscard]] auto& price_id() const noexcept { return m_price_id; }
             [[nodiscard]] auto& price_id() noexcept { return m_price_id; }
             [[nodiscard]] auto& quantity() const noexcept { return m_quantity; }
             [[nodiscard]] auto& quantity() noexcept { return m_quantity; }
+            //! @}
 
+            /**
+             * @brief Compare whether two line items have the same price ID and quantity.
+             *
+             * @param lhs The left-hand-size line item to compare.
+             * @param rhs The right-hand-size line item to compare.
+             *
+             * @return Returns the comparison result.
+             */
             [[nodiscard]] friend bool
             operator==(const line_item& lhs, const line_item& rhs) noexcept = default;
 
