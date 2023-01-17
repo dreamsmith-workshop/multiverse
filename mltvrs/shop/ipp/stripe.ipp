@@ -56,14 +56,14 @@ constexpr void mltvrs::shop::stripe::api_key::assign_key(const rfc4648_string_ty
     return ret;
 }
 
-auto mltvrs::shop::stripe::checkout_request::insert(auto&&... args) -> iterator
+auto mltvrs::shop::stripe::checkout_request::insert(auto&&... insert_args) -> iterator
 {
-    return m_line_items.insert(std::forward<decltype(args)>(args)...);
+    return m_line_items.insert(std::forward<decltype(insert_args)>(insert_args)...);
 }
 
-auto mltvrs::shop::stripe::checkout_request::emplace(auto&&... args) -> iterator
+auto mltvrs::shop::stripe::checkout_request::emplace(auto&&... emplace_args) -> iterator
 {
-    return m_line_items.emplace(std::forward<decltype(args)>(args)...);
+    return m_line_items.emplace(std::forward<decltype(emplace_args)>(emplace_args)...);
 }
 
 void mltvrs::shop::stripe::checkout_request::push_back(auto&& value)
@@ -71,14 +71,15 @@ void mltvrs::shop::stripe::checkout_request::push_back(auto&& value)
     return m_line_items.push_back(std::forward<decltype(value)>(value));
 }
 
-void mltvrs::shop::stripe::checkout_request::emplace_back(auto&&... args)
+void mltvrs::shop::stripe::checkout_request::emplace_back(auto&&... emplace_back_args)
 {
-    return m_line_items.emplace_back(std::forward<decltype(args)>(args)...);
+    return m_line_items.emplace_back(
+        std::forward<decltype(emplace_back_args)>(emplace_back_args)...);
 }
 
-void mltvrs::shop::stripe::checkout_request::resize(auto&&... args)
+void mltvrs::shop::stripe::checkout_request::resize(auto&&... resize_args)
 {
-    return m_line_items.resize(std::forward<decltype(args)>(args)...);
+    return m_line_items.resize(std::forward<decltype(resize_args)>(resize_args)...);
 }
 
 [[nodiscard]] auto mltvrs::shop::stripe::http::make_request(const api_key& key, const auto& payload)

@@ -175,13 +175,13 @@ namespace mltvrs::shop::stripe {
             void               shrink_to_fit() { m_line_items.shrink_to_fit(); }
 
             void clear() noexcept { m_line_items.clear(); }
-            auto insert(auto&&... args) -> iterator;
-            auto emplace(auto&&... args) -> iterator;
-            auto erase(auto... args) noexcept { return m_line_items.erase(args...); }
+            auto insert(auto&&... insert_args) -> iterator;
+            auto emplace(auto&&... emplace_args) -> iterator;
+            auto erase(auto... erase_args) noexcept { return m_line_items.erase(erase_args...); }
             void push_back(auto&& value);
-            void emplace_back(auto&&... args);
+            void emplace_back(auto&&... emplace_back_args);
             void pop_back() noexcept { m_line_items.pop_back(); }
-            void resize(auto&&... args);
+            void resize(auto&&... resize_args);
             void swap(checkout_request& other) noexcept;
 
             [[nodiscard]] friend bool
