@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(multiverse_shop LANGUAGES CXX VERSION 0.0.1)
 
-find_package(Boost         REQUIRED)
+find_package(Boost         REQUIRED COMPONENTS json)
 find_package(Microsoft.GSL REQUIRED)
 find_package(fmt           REQUIRED)
 find_package(cpprestsdk    REQUIRED)
@@ -16,7 +16,7 @@ target_link_libraries(
     mltvrs_shop
         PUBLIC
             mltvrs
-            Boost::boost
+            Boost::json
             Microsoft.GSL::GSL
             fmt::fmt-header-only
             cpprestsdk::cpprest
