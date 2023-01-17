@@ -143,12 +143,31 @@ namespace mltvrs::shop::stripe {
             unsigned    m_quantity;
     };
 
+    /**
+     * @brief A request to check out and pay for a shopping cart.
+     *
+     * A checkout request contains checkout result redirect information, plus the shopping cart to
+     * perform checkout on.
+     *
+     * A checkout request satisfies the Standard requirements for
+     * [Sequence Container](https://en.cppreference.com/w/cpp/named_req/SequenceContainer) and
+     * [Contiguous Container](https://en.cppreference.com/w/cpp/named_req/ContiguousContainer) with
+     * elements of type `stripe::line_item`, except that it does not provide any of the same
+     * constructors.
+     */
     class checkout_request
     {
         private:
             using line_items_storage = std::vector<line_item>;
 
         public:
+            /**
+             * @name Sequence Container Member Types
+             *
+             * @brief Types satisfying Standard requirements for a Sequence Container.
+             *
+             * @{
+             */
             using value_type             = line_items_storage::value_type;
             using size_type              = line_items_storage::size_type;
             using difference_type        = line_items_storage::difference_type;
@@ -160,16 +179,45 @@ namespace mltvrs::shop::stripe {
             using const_iterator         = line_items_storage::const_iterator;
             using reverse_iterator       = line_items_storage::reverse_iterator;
             using const_reverse_iterator = line_items_storage::const_reverse_iterator;
+            //! @}
 
+            /**
+             * @brief Create a checkout request with the given redirect links and cart items.
+             *
+             * @param success The location for Stripe to direct a successful checkout to.
+             * @param cancel  The location for Stripe to direct a canceled checkout to.
+             * @param items   The cart items to checkout.
+             */
             checkout_request(web::uri success, web::uri cancel, line_items_storage items) noexcept;
 
+            /**
+             * @name Properties
+             *
+             * @brief Access individual checkout request properties.
+             *
+             * @return Returns the requested checkout request property.
+             *
+             * @{
+             */
             [[nodiscard]] auto& success_url() const noexcept { return m_success_url; }
             [[nodiscard]] auto& success_url() noexcept { return m_success_url; }
             [[nodiscard]] auto& cancel_url() const noexcept { return m_cancel_url; }
             [[nodiscard]] auto& cancel_url() noexcept { return m_cancel_url; }
             [[nodiscard]] auto& line_items() const noexcept { return m_line_items; }
             [[nodiscard]] auto& line_items() noexcept { return m_line_items; }
+            //! @}
 
+            /**
+             * @name Element Access
+             *
+             * @brief Access individual line items in the shopping cart.
+             *
+             * @param pos The index of the line item to access.
+             *
+             * @return Returns the requested line item or items array.
+             *
+             * @{
+             */
             [[nodiscard]] auto& at(size_type pos) const { return m_line_items.at(pos); }
             [[nodiscard]] auto& at(size_type pos) { return m_line_items.at(pos); }
             [[nodiscard]] auto  operator[](size_type pos) const noexcept -> const_reference;
@@ -180,7 +228,17 @@ namespace mltvrs::shop::stripe {
             [[nodiscard]] auto& back() noexcept { return m_line_items.back(); }
             [[nodiscard]] auto  data() const noexcept { return m_line_items.data(); }
             [[nodiscard]] auto  data() noexcept { return m_line_items.data(); }
+            //! @}
 
+            /**
+             * @name Iterators
+             *
+             * @brief Obtain an iterator into the line items in the cart.
+             *
+             * @return Returns the requested iterator.
+             *
+             * @{
+             */
             [[nodiscard]] auto cbegin() const noexcept { return m_line_items.cbegin(); }
             [[nodiscard]] auto begin() const noexcept { return m_line_items.begin(); }
             [[nodiscard]] auto begin() noexcept { return m_line_items.begin(); }
@@ -193,14 +251,40 @@ namespace mltvrs::shop::stripe {
             [[nodiscard]] auto crend() const noexcept { return m_line_items.crend(); }
             [[nodiscard]] auto rend() const noexcept { return m_line_items.rend(); }
             [[nodiscard]] auto rend() noexcept { return m_line_items.rend(); }
+            //! @}
 
+            /**
+             * @name Capacity
+             *
+             * @brief Manage the cart line items count.
+             *
+             * @return Returns the requested cart count property.
+             *
+             * @{
+             */
             [[nodiscard]] auto empty() const noexcept { return m_line_items.empty(); }
             [[nodiscard]] auto size() const noexcept { return m_line_items.size(); }
             [[nodiscard]] auto max_size() const noexcept { return m_line_items.max_size(); }
             void               reserve(size_type new_cap) { m_line_items.reserve(new_cap); }
             [[nodiscard]] auto capacity() const noexcept { return m_line_items.capacity(); }
             void               shrink_to_fit() { m_line_items.shrink_to_fit(); }
+            //! @}
 
+            /**
+             * @name Modifiers
+             *
+             * @brief Modify the cart.
+             *
+             * @param insert_args       Standard Sequence Container insertion arguments.
+             * @param emplace_args      Standard Sequence Container random emplacement arguments.
+             * @param erase_args        Standard Sequence Container random erase arguments.
+             * @param value             The line item to add to the cart.
+             * @param emplace_back_args Standard Sequence Container back-emplacement arguments.
+             * @param resize_args       Standard Sequence Container resize arguments.
+             * @param other             The checkout request to swap with.
+             *
+             * @{
+             */
             void clear() noexcept { m_line_items.clear(); }
             auto insert(auto&&... insert_args) -> iterator;
             auto emplace(auto&&... emplace_args) -> iterator;
@@ -210,6 +294,7 @@ namespace mltvrs::shop::stripe {
             void pop_back() noexcept { m_line_items.pop_back(); }
             void resize(auto&&... resize_args);
             void swap(checkout_request& other) noexcept;
+            //! @}
 
             [[nodiscard]] friend bool
             operator==(const checkout_request& lhs, const checkout_request& rhs) noexcept = default;
