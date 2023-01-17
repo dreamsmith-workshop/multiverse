@@ -71,7 +71,7 @@ template<std::convertible_to<std::string_view> Encoded>
     auto ret = Encoded{};
     ret.reserve(num_chunks * 4);
     for(auto begin = ranges::cbegin(range); std::distance(begin, ranges::cend(range)) >= src_stride;
-        begin      += src_stride)
+        begin += src_stride)
     {
         const auto triple   = ranges::subrange{begin, begin + src_stride};
         const auto b6_group = detail::byte_triple_to_b6_groups(triple);
@@ -104,7 +104,7 @@ template<std::convertible_to<std::string_view> Encoded>
     return ret;
 }
 
-template<mltvrs::ietf::byte_range Decoded = std::vector<std::byte>>
+template<mltvrs::ietf::byte_range Decoded>
 [[nodiscard]] auto mltvrs::ietf::decode_base64(std::string_view encoded) -> Decoded
 {
     namespace ranges = std::ranges;
