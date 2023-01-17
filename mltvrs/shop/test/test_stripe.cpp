@@ -1,14 +1,19 @@
 #include <random>
+#include <ranges>
 
+#include <boost/json.hpp>
 #include <boost/static_string.hpp>
 
+#include <mltvrs/ietf/rfc4648.hpp>
 #include <mltvrs/shop/stripe.hpp>
 
 #include <catch2/catch_all.hpp>
 
 namespace {
 
+    namespace ranges = std::ranges;
     namespace beast  = boost::beast;
+    namespace json   = boost::json;
     namespace ietf   = mltvrs::ietf;
     namespace shop   = mltvrs::shop;
     namespace stripe = shop::stripe;
@@ -47,9 +52,9 @@ CATCH_SCENARIO("payment session request message builds correctly")
         const auto success_url = web::uri{"https://example.com/success"};
         const auto cancel_url  = web::uri{"https://example.com/cancel"};
         const auto line_items  = std::vector{
-            stripe::line_item{ "first", GENERATE(take(1, random(1u, 10u)))},
+            stripe::line_item{"first",  GENERATE(take(1, random(1u, 10u)))},
             stripe::line_item{"second", GENERATE(take(1, random(1u, 10u)))},
-            stripe::line_item{ "third", GENERATE(take(1, random(1u, 10u)))}
+            stripe::line_item{"third",  GENERATE(take(1, random(1u, 10u)))}
         };
 
         const auto test_value = stripe::checkout_request{success_url, cancel_url, line_items};
@@ -73,16 +78,36 @@ CATCH_SCENARIO("payment session request message builds correctly")
                 const auto request = stripe::http::make_request(api_key, test_value);
                 const auto api_url = web::uri{"https://api.stripe.com/v1/checkout/sessions"};
 
+                const auto built_auth     = request.at(beast::http::field::authorization);
+                const auto built_auth_b64 = built_auth.substr(sizeof("Basic ") - 1);
+                const auto built_payload  = json::parse(request.body());
+                const auto built_items    = line_items
+                                       | ranges::views::transform(
+                                             [](const auto& item)
+                                             {
+                                                 return json::object{
+                                                     {"price",    item.price_id()},
+                                                     {"quantity", item.quantity()}
+                                                 };
+                                             });
+
                 CATCH_REQUIRE(request.method() == beast::http::verb::get);
                 CATCH_REQUIRE(request.target() == "/v1/checkout/sessions");
                 CATCH_REQUIRE(request.version() == 20); // HTTP/2
                 CATCH_REQUIRE(request.at(beast::http::field::host) == "api.stripe.com");
-                CATCH_REQUIRE(request.at(beast::http::field::authorization).starts_with("Basic "));
+                CATCH_REQUIRE(built_auth.starts_with("Basic "));
                 CATCH_REQUIRE(
                     std::string_view{api_key.full_string().c_str()}
-                    == ietf::decode_base64<std::string>(
-                        request.at(beast::http::field::authorization)
-                            .substr(sizeof("Basic ") - 1)));
+                    == ietf::decode_base64<std::string>(built_auth_b64));
+                CATCH_REQUIRE(
+                    built_payload
+                    == json::object{
+                        {"success_url", success_url.to_string()},
+                        {"cancel_url", cancel_url.to_string()},
+                        {"line_items",
+                         json::array(ranges::cbegin(built_items), ranges::cend(built_items))},
+                        {"mode", "payment"}
+                });
             }
         }
     }
