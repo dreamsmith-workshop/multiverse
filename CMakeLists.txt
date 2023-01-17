@@ -37,4 +37,5 @@ target_include_directories(mltvrs INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 # Add Sub-Libraries #
 #####################
 
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs/ietf)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs/shop)
