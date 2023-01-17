@@ -18,11 +18,7 @@ function(mltvrs_configure_project)
 
     if(DEFINED ${PARSED_PREFIX}_STDLIB AND NOT ${PARSED_PREFIX}_STDLIB STREQUAL "default")
         if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -stdlib=${${PARSED_PREFIX}_STDLIB}"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=${${PARSED_PREFIX}_STDLIB}")
         else()
             message(FATAL_ERROR "${PARSED_PREFIX}_STDLIB must be \"default\" unless using Clang")
         endif()
@@ -34,19 +30,13 @@ function(mltvrs_configure_project)
             set(
                 CMAKE_EXE_LINKER_FLAGS
                     "${CMAKE_EXE_LINKER_FLAGS} -L ${${PARSED_PREFIX}_STDLIB_PATH}"
-                    PARENT_SCOPE
             )
             set(
                 CMAKE_EXE_LINKER_FLAGS
                     "${CMAKE_EXE_LINKER_FLAGS} -rpath ${${PARSED_PREFIX}_STDLIB_PATH}"
-                    PARENT_SCOPE
             )
         elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -Wl,-rpath -Wl,${${PARSED_PREFIX}_STDLIB_PATH}"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath -Wl,${${PARSED_PREFIX}_STDLIB_PATH}")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_STDLIB_PATH")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -60,11 +50,7 @@ function(mltvrs_configure_project)
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -isystem ${${PARSED_PREFIX}_STDLIB_INCLUDE}"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${${PARSED_PREFIX}_STDLIB_INCLUDE}")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_STDLIB_INCLUDE")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -75,11 +61,7 @@ function(mltvrs_configure_project)
 
     if(${PARSED_PREFIX}_ENABLE_STATIC_STDLIB)
         if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -static"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
         else()
             message(FATAL_ERROR "${PARSED_PREFIX}_ENABLE_STATIC_STDLIB must be \"OFF\" unless using Clang")
         endif()
@@ -92,11 +74,7 @@ function(mltvrs_configure_project)
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -Wall -Wextra"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_ENABLE_WALL")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -111,11 +89,7 @@ function(mltvrs_configure_project)
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -Werror"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_ENABLE_WERROR")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -127,19 +101,11 @@ function(mltvrs_configure_project)
     # handle detailed-concepts-diagnostics
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         if(${PARSED_PREFIX}_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -fconcepts-diagnostics-depth=9"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts-diagnostics-depth=9")
         endif()
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         if(${PARSED_PREFIX}_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -ftemplate-backtrace-limit=0"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-backtrace-limit=0")
         endif()
     else()
         if(${PARSED_PREFIX}_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
@@ -156,11 +122,7 @@ function(mltvrs_configure_project)
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -fno-exceptions"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_DISABLE_EXCEPTIONS")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -175,11 +137,7 @@ function(mltvrs_configure_project)
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -fno-rtti"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_DISABLE_RTTI")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -187,6 +145,23 @@ function(mltvrs_configure_project)
         endif()
     endif()
     mltvrs_report_option(DISABLE_RTTI)
+
+    set(
+        CMAKE_EXE_LINKER_FLAGS
+            "${CMAKE_EXE_LINKER_FLAGS}"
+            CACHE
+                STRING
+                "Flags used by the linker during all build types."
+            FORCE
+    )
+    set(
+        CMAKE_CXX_FLAGS
+            "${CMAKE_CXX_FLAGS}"
+            CACHE
+                STRING
+                "Flags used by the CXX compiler during all build types."
+            FORCE
+    )
 
     set(MAX_LENGTH 0)
     foreach(OPTION_NAME ${OPTIONS_LIST})
