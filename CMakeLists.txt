@@ -31,7 +31,13 @@ set(MLTVRS_IPP ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/string_literal.ipp)
 set(MLTVRS_CPP)
 
 add_library(mltvrs INTERFACE ${MLTVRS_HPP} ${MLTVRS_IPP} ${MLTVRS_CPP})
-target_include_directories(mltvrs INTERFACE ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(
+    mltvrs
+        INTERFACE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/mltvrs>
+)
+add_library(mltvrs::mltvrs ALIAS mltvrs)
 
 #####################
 # Add Sub-Libraries #
@@ -39,3 +45,65 @@ target_include_directories(mltvrs INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs/ietf)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs/shop)
+
+################
+# Installation #
+################
+
+if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+    include(CMakePackageConfigHelpers)
+
+    set(MLTVRS_CMAKE_CONFIG_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mltvrs")
+
+    install(TARGETS mltvrs EXPORT mltvrsTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(
+        EXPORT
+            mltvrsTargets
+        NAMESPACE
+            mltvrs::
+        DESTINATION
+            ${MLTVRS_CMAKE_CONFIG_DESTINATION}
+    )
+    install(
+        DIRECTORY
+            "mltvrs"
+        DESTINATION
+            "${CMAKE_INSTALL_INCLUDEDIR}/mltvrs"
+        REGEX
+            "" EXCLUDE
+    )
+
+    configure_package_config_file(
+        ${CMAKE_CURRENT_LIST_DIR}/cmake/mltvrsConfig.in.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfig.cmake
+        INSTALL_DESTINATION
+            ${MLTVRS_CMAKE_CONFIG_DESTINATION}
+    )
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfigVersion.cmake"
+        COMPATIBILITY
+            SameMajorVersion
+    )
+    install(
+        FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfig.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfigVersion.cmake"
+        DESTINATION
+            ${MLTVRS_CMAKE_CONFIG_DESTINATION}
+    )
+
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/mltvrs.in.pc
+        ${CMAKE_CURRENT_BINARY_DIR}/mltvrs.pc
+        @ONLY
+    )
+    install(
+        FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/mltvrs.pc"
+        DESTINATION
+            ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig
+    )
+
+    set(CPACK_PACKAGE_CONTACT "https://github.com/dreamsmith-workshop")
+    include(CPack)
+endif()
