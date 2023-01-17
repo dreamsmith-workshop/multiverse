@@ -8,6 +8,8 @@
 
 namespace {
 
+    namespace beast  = boost::beast;
+    namespace ietf   = mltvrs::ietf;
     namespace shop   = mltvrs::shop;
     namespace stripe = shop::stripe;
 
@@ -50,10 +52,10 @@ CATCH_SCENARIO("payment session request message builds correctly")
             stripe::line_item{ "third", GENERATE(take(1, random(1u, 10u)))}
         };
 
+        const auto test_value = stripe::checkout_request{success_url, cancel_url, line_items};
+
         CATCH_THEN("constructing a payment session request preserves initializing values")
         {
-            const auto test_value = stripe::checkout_request{success_url, cancel_url, line_items};
-
             CATCH_REQUIRE(test_value.success_url() == success_url);
             CATCH_REQUIRE(test_value.cancel_url() == cancel_url);
             CATCH_REQUIRE(test_value.line_items() == line_items);
@@ -68,6 +70,19 @@ CATCH_SCENARIO("payment session request message builds correctly")
 
             CATCH_THEN("creating an HTTP request generates a properly-formed request")
             {
+                const auto request = stripe::http::make_request(api_key, test_value);
+                const auto api_url = web::uri{"https://api.stripe.com/v1/checkout/sessions"};
+
+                CATCH_REQUIRE(request.method() == beast::http::verb::get);
+                CATCH_REQUIRE(request.target() == "/v1/checkout/sessions");
+                CATCH_REQUIRE(request.version() == 20); // HTTP/2
+                CATCH_REQUIRE(request.at(beast::http::field::host) == "api.stripe.com");
+                CATCH_REQUIRE(request.at(beast::http::field::authorization).starts_with("Basic "));
+                CATCH_REQUIRE(
+                    std::string_view{api_key.full_string().c_str()}
+                    == ietf::decode_base64<std::string>(
+                        request.at(beast::http::field::authorization)
+                            .substr(sizeof("Basic ") - 1)));
             }
         }
     }

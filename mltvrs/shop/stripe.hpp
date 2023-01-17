@@ -2,11 +2,14 @@
 
 #include <span>
 
+#include <boost/beast.hpp>
 #include <boost/static_string.hpp>
 
-#include <mltvrs/string_literal.hpp>
+#include <fmt/format.h>
 
 #include <cpprest/uri.h>
+
+#include <mltvrs/string_literal.hpp>
 
 namespace mltvrs::shop::stripe {
 
@@ -189,6 +192,13 @@ namespace mltvrs::shop::stripe {
             web::uri           m_cancel_url;
             line_items_storage m_line_items;
     };
+
+    namespace http {
+
+        [[nodiscard]] auto make_request(const api_key& key, const auto& payload)
+            -> boost::beast::http::request<boost::beast::http::string_body>;
+
+    } // namespace http
 
 } // namespace mltvrs::shop::stripe
 
