@@ -5,6 +5,8 @@ from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout
 class MultiverseConan(ConanFile):
     name = "multiverse"
     version = "0.0.1"
+    requires = "boost/1.81.0", "fmt/5.3.0", "catch2/2.13.9", "ms-gsl/4.0.0"
+    generators = "cmake_find_package_multi"
 
     # Optional metadata
     license = "MIT"
@@ -16,7 +18,13 @@ class MultiverseConan(ConanFile):
     # Binary configuration
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    default_options = {
+        "shared": False,
+        "fPIC": True,
+        "boost:header_only": True,
+        "fmt:header_only": True,
+        "catch2:with_prefix": True,
+    }
 
     # Sources are located in the same place as this recipe, copy them to the recipe
     exports_sources = "CMakeLists.txt", "mltvrs/*", "cmake/*"
