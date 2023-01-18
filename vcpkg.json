@@ -1,9 +1,0 @@
-{
-    "name": "multiverse",
-    "version-string": "0.0.1",
-    "dependencies": [
-        "boost",
-        "fmt",
-        "cpprestsdk"
-    ]
-}
