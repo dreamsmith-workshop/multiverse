@@ -5,7 +5,6 @@ project(multiverse_shop LANGUAGES CXX VERSION 0.0.1)
 find_package(Boost         REQUIRED)
 find_package(Microsoft.GSL REQUIRED)
 find_package(fmt           REQUIRED)
-find_package(cpprestsdk    REQUIRED)
 
 set(MLTVRS_SHOP_HPP ${CMAKE_CURRENT_LIST_DIR}/stripe.hpp)
 set(MLTVRS_SHOP_IPP ${CMAKE_CURRENT_LIST_DIR}/ipp/stripe.ipp)
@@ -19,7 +18,6 @@ target_link_libraries(
             Boost::boost
             Microsoft.GSL::GSL
             fmt::fmt-header-only
-            cpprestsdk::cpprest
 )
 
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)

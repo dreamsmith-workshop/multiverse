@@ -4,6 +4,7 @@
 #include <boost/json.hpp>
 #include <boost/json/src.hpp>
 #include <boost/static_string.hpp>
+#include <boost/url/src.hpp>
 
 #include <mltvrs/ietf/rfc4648.hpp>
 #include <mltvrs/shop/stripe.hpp>
@@ -51,8 +52,8 @@ CATCH_SCENARIO("payment session request message builds correctly")
 {
     CATCH_GIVEN("success and failure URLs, and the line items")
     {
-        const auto success_url = web::uri{"https://example.com/success"};
-        const auto cancel_url  = web::uri{"https://example.com/cancel"};
+        const auto success_url = boost::url{"https://example.com/success"};
+        const auto cancel_url  = boost::url{"https://example.com/cancel"};
         const auto line_items  = std::vector{
             stripe::line_item{"first",  GENERATE(take(1, random(1u, 10u)))},
             stripe::line_item{"second", GENERATE(take(1, random(1u, 10u)))},
@@ -78,7 +79,7 @@ CATCH_SCENARIO("payment session request message builds correctly")
             CATCH_THEN("creating an HTTP request generates a properly-formed request")
             {
                 const auto request = stripe::http::make_request(api_key, test_value);
-                const auto api_url = web::uri{"https://api.stripe.com/v1/checkout/sessions"};
+                const auto api_url = boost::url{"https://api.stripe.com/v1/checkout/sessions"};
 
                 const auto built_auth     = request.at(beast::http::field::authorization);
                 const auto built_auth_b64 = built_auth.substr(sizeof("Basic ") - 1);
@@ -104,8 +105,8 @@ CATCH_SCENARIO("payment session request message builds correctly")
                 CATCH_REQUIRE(
                     built_payload
                     == json::object{
-                        {"success_url", success_url.to_string()},
-                        {"cancel_url", cancel_url.to_string()},
+                        {"success_url", success_url.buffer()},
+                        {"cancel_url", cancel_url.buffer()},
                         {"line_items",
                          json::array(ranges::cbegin(built_items), ranges::cend(built_items))},
                         {"mode", "payment"}

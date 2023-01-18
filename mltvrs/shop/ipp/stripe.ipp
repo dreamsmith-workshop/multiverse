@@ -3,10 +3,10 @@
 namespace mltvrs::shop::stripe::detail {
 
     [[nodiscard]] auto make_http_get(
-        const web::uri& host,
-        const web::uri& target,
-        const api_key&  key,
-        std::string     payload) -> boost::beast::http::request<boost::beast::http::string_body>;
+        const boost::url& host,
+        const boost::url& target,
+        const api_key&    key,
+        std::string       payload) -> boost::beast::http::request<boost::beast::http::string_body>;
     [[nodiscard]] auto serialize_payload(const checkout_request& request) -> std::string;
 
 } // namespace mltvrs::shop::stripe::detail
@@ -89,8 +89,8 @@ void mltvrs::shop::stripe::checkout_request::resize(auto&&... resize_args)
 
     if constexpr(std::same_as<payload_type, checkout_request>) {
         return detail::make_http_get(
-            "api.stripe.com",
-            "/v1/checkout/sessions",
+            boost::url{"api.stripe.com"},
+            boost::url{"/v1/checkout/sessions"},
             key,
             detail::serialize_payload(payload));
     } else {

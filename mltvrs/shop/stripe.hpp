@@ -4,10 +4,7 @@
 
 #include <boost/beast.hpp>
 #include <boost/static_string.hpp>
-
-#include <fmt/format.h>
-
-#include <cpprest/uri.h>
+#include <boost/url.hpp>
 
 #include <mltvrs/string_literal.hpp>
 
@@ -188,7 +185,10 @@ namespace mltvrs::shop::stripe {
              * @param cancel  The location for Stripe to direct a canceled checkout to.
              * @param items   The cart items to checkout.
              */
-            checkout_request(web::uri success, web::uri cancel, line_items_storage items) noexcept;
+            checkout_request(
+                boost::url         success,
+                boost::url         cancel,
+                line_items_storage items) noexcept;
 
             /**
              * @name Properties
@@ -300,8 +300,8 @@ namespace mltvrs::shop::stripe {
             operator==(const checkout_request& lhs, const checkout_request& rhs) noexcept = default;
 
         private:
-            web::uri           m_success_url;
-            web::uri           m_cancel_url;
+            boost::url         m_success_url;
+            boost::url         m_cancel_url;
             line_items_storage m_line_items;
     };
 

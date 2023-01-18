@@ -1,5 +1,7 @@
 #include <boost/json.hpp>
 
+#include <fmt/format.h>
+
 #include <mltvrs/ietf/rfc4648.hpp>
 #include <mltvrs/shop/stripe.hpp>
 
@@ -35,8 +37,8 @@ mltvrs::shop::stripe::line_item::line_item(std::string price_ident, unsigned qua
 }
 
 mltvrs::shop::stripe::checkout_request::checkout_request(
-    web::uri           success,
-    web::uri           cancel,
+    boost::url         success,
+    boost::url         cancel,
     line_items_storage items) noexcept
     : m_success_url{std::move(success)},
       m_cancel_url{std::move(cancel)},
@@ -58,18 +60,16 @@ void mltvrs::shop::stripe::checkout_request::swap(checkout_request& other) noexc
 }
 
 [[nodiscard]] auto mltvrs::shop::stripe::detail::make_http_get(
-    const web::uri& host,
-    const web::uri& target,
-    const api_key&  key,
-    std::string     payload) -> boost::beast::http::request<boost::beast::http::string_body>
+    const boost::url& host,
+    const boost::url& target,
+    const api_key&    key,
+    std::string       payload) -> boost::beast::http::request<boost::beast::http::string_body>
 {
     namespace beast = boost::beast;
 
-    auto ret = beast::http::request<beast::http::string_body>{
-        beast::http::verb::get,
-        target.to_string(),
-        20};
-    ret.set(beast::http::field::host, host.to_string());
+    auto ret =
+        beast::http::request<beast::http::string_body>{beast::http::verb::get, target.buffer(), 20};
+    ret.set(beast::http::field::host, host.buffer());
     ret.set(
         beast::http::field::authorization,
         fmt::format("Basic {}", ietf::encode_base64(key.full_string())));
@@ -82,9 +82,9 @@ void mltvrs::shop::stripe::checkout_request::swap(checkout_request& other) noexc
     -> std::string
 {
     return json::serialize(json::object{
-        {"success_url", request.success_url().to_string()},
-        {"cancel_url",  request.cancel_url().to_string() },
-        {"line_items",  items_to_json(request)           },
-        {"mode",        "payment"                        }
+        {"success_url", request.success_url().buffer()},
+        {"cancel_url",  request.cancel_url().buffer() },
+        {"line_items",  items_to_json(request)        },
+        {"mode",        "payment"                     }
     });
 }
