@@ -23,4 +23,5 @@ target_link_libraries(
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
     add_executable(test_stripe ${CMAKE_CURRENT_LIST_DIR}/test/test_stripe.cpp)
     target_link_libraries(test_stripe PRIVATE mltvrs_shop mltvrs::mltvrs_test_main)
+    add_test(NAME test_stripe COMMAND test_stripe)
 endif()

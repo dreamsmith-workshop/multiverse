@@ -157,6 +157,7 @@ function(mltvrs_configure_project)
             COMMAND_ERROR_IS_FATAL
                 ANY
         )
+        file(REMOVE ${CMAKE_SOURCE_DIR}/CMakeUserPresets.json)
     endif()
     if(EXISTS ${CMAKE_SOURCE_DIR}/conan/conan.lock)
         list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/conan)
@@ -164,9 +165,9 @@ function(mltvrs_configure_project)
     mltvrs_report_option(ENABLE_CONAN_OVERRIDE)
 
     # handle testing
+    include(CTest)
     if(ENABLE_TESTING AND ${PARSED_PREFIX}_ENABLE_TESTING)
-        include(CTest)
-        find_package(Catch2 3 REQUIRED)
+        find_package(Catch2 REQUIRED)
     endif()
     mltvrs_report_option(ENABLE_TESTING)
 
