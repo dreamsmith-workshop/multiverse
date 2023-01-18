@@ -1,6 +1,7 @@
 #include <mltvrs/ietf/rfc4648.hpp>
 
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators_all.hpp>
 
 CATCH_SCENARIO("RFC-4648 base-64 conversion works as expected")
 {
