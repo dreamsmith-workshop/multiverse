@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.19)
 
 project(multiverse_shop LANGUAGES CXX VERSION 0.0.1)
 
-find_package(Boost         REQUIRED COMPONENTS json)
+find_package(Boost         REQUIRED)
 find_package(Microsoft.GSL REQUIRED)
 find_package(fmt           REQUIRED)
 find_package(cpprestsdk    REQUIRED)
@@ -16,18 +16,13 @@ target_link_libraries(
     mltvrs_shop
         PUBLIC
             mltvrs
-            Boost::json
+            Boost::boost
             Microsoft.GSL::GSL
             fmt::fmt-header-only
             cpprestsdk::cpprest
 )
 
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
-    include(CTest)
-
-    find_package(Catch2 REQUIRED)
-
     add_executable(test_stripe ${CMAKE_CURRENT_LIST_DIR}/test/test_stripe.cpp)
-    target_compile_definitions(test_stripe PRIVATE CATCH_CONFIG_PREFIX_ALL)
-    target_link_libraries(test_stripe PRIVATE mltvrs_shop Catch2::Catch2WithMain)
+    target_link_libraries(test_stripe PRIVATE mltvrs_shop mltvrs::mltvrs_test_main)
 endif()

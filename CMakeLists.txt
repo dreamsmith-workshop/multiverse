@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.19)
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/project-config.cmake)
 
@@ -13,6 +13,7 @@ option(MLTVRS_ENABLE_WERROR                        OFF)
 option(MLTVRS_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS OFF)
 option(MLTVRS_ENABLE_TESTING                       OFF)
 option(MLTVRS_ENABLE_STATIC_STDLIB                 OFF)
+option(MLTVRS_ENABLE_CONAN_OVERRIDE                OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -38,6 +39,17 @@ target_include_directories(
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/mltvrs>
 )
 add_library(mltvrs::mltvrs ALIAS mltvrs)
+
+#########################
+# Create Testing Target #
+#########################
+
+if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
+    add_library(mltvrs_test_main ${CMAKE_CURRENT_LIST_DIR}/mltvrs/test/test_main.cpp)
+    target_compile_definitions(mltvrs_test_main PUBLIC CATCH_CONFIG_PREFIX_ALL)
+    target_link_libraries(mltvrs_test_main PUBLIC Catch2::Catch2)
+    add_library(mltvrs::mltvrs_test_main ALIAS mltvrs_test_main)
+endif()
 
 #####################
 # Add Sub-Libraries #

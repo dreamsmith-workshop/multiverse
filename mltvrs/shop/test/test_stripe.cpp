@@ -2,12 +2,14 @@
 #include <ranges>
 
 #include <boost/json.hpp>
+#include <boost/json/src.hpp>
 #include <boost/static_string.hpp>
 
 #include <mltvrs/ietf/rfc4648.hpp>
 #include <mltvrs/shop/stripe.hpp>
 
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators_all.hpp>
 
 namespace {
 
