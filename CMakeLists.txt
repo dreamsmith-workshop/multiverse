@@ -45,10 +45,7 @@ add_library(mltvrs::mltvrs ALIAS mltvrs)
 #########################
 
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
-    add_library(mltvrs_test_main ${CMAKE_CURRENT_LIST_DIR}/mltvrs/test/test_main.cpp)
-    target_compile_definitions(mltvrs_test_main PUBLIC CATCH_CONFIG_PREFIX_ALL)
-    target_link_libraries(mltvrs_test_main PUBLIC Catch2::Catch2)
-    add_library(mltvrs::mltvrs_test_main ALIAS mltvrs_test_main)
+    add_library(mltvrs::mltvrs_test_main ALIAS Catch2::Catch2WithMain)
 endif()
 
 #####################
