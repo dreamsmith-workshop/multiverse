@@ -65,7 +65,7 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs/shop)
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     include(CMakePackageConfigHelpers)
 
-    set(MLTVRS_CMAKE_CONFIG_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mltvrs")
+    set(MLTVRS_CMAKE_CONFIG_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mltvrs)
 
     install(TARGETS mltvrs EXPORT mltvrsTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
     install(
@@ -78,11 +78,24 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     )
     install(
         DIRECTORY
-            "mltvrs"
+            ${CMAKE_CURRENT_LIST_DIR}/mltvrs
         DESTINATION
-            "${CMAKE_INSTALL_INCLUDEDIR}/mltvrs"
+            "${CMAKE_INSTALL_INCLUDEDIR}"
         REGEX
-            "" EXCLUDE
+            ".+\.cpp"
+            EXCLUDE
+        REGEX
+            "test"
+            EXCLUDE
+    )
+    install(
+        DIRECTORY
+            ${CMAKE_CURRENT_LIST_DIR}/cmake
+        DESTINATION
+            ${MLTVRS_CMAKE_CONFIG_DESTINATION}
+        REGEX
+            ".+\.in\..+"
+            EXCLUDE
     )
 
     configure_package_config_file(
@@ -92,14 +105,14 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
             ${MLTVRS_CMAKE_CONFIG_DESTINATION}
     )
     write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfigVersion.cmake"
+        ${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfigVersion.cmake
         COMPATIBILITY
             SameMajorVersion
     )
     install(
         FILES
-            "${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfig.cmake"
-            "${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfigVersion.cmake"
+            ${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfig.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/mltvrsConfigVersion.cmake
         DESTINATION
             ${MLTVRS_CMAKE_CONFIG_DESTINATION}
     )
@@ -111,7 +124,7 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     )
     install(
         FILES
-            "${CMAKE_CURRENT_BINARY_DIR}/mltvrs.pc"
+            ${CMAKE_CURRENT_BINARY_DIR}/mltvrs.pc
         DESTINATION
             ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig
     )

@@ -36,6 +36,7 @@
 
 # Conan
 conan/
+build/
 CMakeUserPresets.json
 conan.lock
 conanbuildinfo.*
