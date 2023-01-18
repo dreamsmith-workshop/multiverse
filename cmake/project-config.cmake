@@ -193,7 +193,7 @@ function(mltvrs_configure_project)
         endif()
         execute_process(
             COMMAND
-                conan install ../ --build missing -s build_type=${CMAKE_BUILD_TYPE}
+                conan install ../bootstrap --build missing -s build_type=${CMAKE_BUILD_TYPE}
             WORKING_DIRECTORY 
                 ${CMAKE_SOURCE_DIR}/conan
             COMMAND_ERROR_IS_FATAL
