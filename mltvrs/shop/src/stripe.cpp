@@ -39,11 +39,19 @@ mltvrs::shop::stripe::line_item::line_item(std::string price_ident, unsigned qua
 mltvrs::shop::stripe::checkout_request::checkout_request(
     boost::url         success,
     boost::url         cancel,
+    std::string        cust_ref_id,
     line_items_storage items) noexcept
     : m_success_url{std::move(success)},
       m_cancel_url{std::move(cancel)},
+      m_client_reference_id{std::move(cust_ref_id)},
       m_line_items{std::move(items)}
 {
+}
+
+[[nodiscard]] auto mltvrs::shop::stripe::checkout_request::client_reference_id() const noexcept
+    -> const std::string&
+{
+    return m_client_reference_id;
 }
 
 [[nodiscard]] auto mltvrs::shop::stripe::checkout_request::operator[](size_type pos) const noexcept

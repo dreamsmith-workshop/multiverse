@@ -50,17 +50,19 @@ namespace {
 
 CATCH_SCENARIO("payment session request message builds correctly")
 {
-    CATCH_GIVEN("success and failure URLs, and the line items")
+    CATCH_GIVEN("success and failure, a client ID, and the line items")
     {
-        const auto success_url = boost::url{"https://example.com/success"};
-        const auto cancel_url  = boost::url{"https://example.com/cancel"};
-        const auto line_items  = std::vector{
+        const auto     success_url = boost::url{"https://example.com/success"};
+        const auto     cancel_url  = boost::url{"https://example.com/cancel"};
+        constexpr auto client      = "test_client";
+        const auto     line_items  = std::vector{
             stripe::line_item{"first",  GENERATE(take(1, random(1u, 10u)))},
             stripe::line_item{"second", GENERATE(take(1, random(1u, 10u)))},
             stripe::line_item{"third",  GENERATE(take(1, random(1u, 10u)))}
         };
 
-        const auto test_value = stripe::checkout_request{success_url, cancel_url, line_items};
+        const auto test_value =
+            stripe::checkout_request{success_url, cancel_url, client, line_items};
 
         CATCH_THEN("constructing a payment session request preserves initializing values")
         {
@@ -107,6 +109,7 @@ CATCH_SCENARIO("payment session request message builds correctly")
                     == json::object{
                         {"success_url", success_url.buffer()},
                         {"cancel_url", cancel_url.buffer()},
+                        {"client_reference_id", client},
                         {"line_items",
                          json::array(ranges::cbegin(built_items), ranges::cend(built_items))},
                         {"mode", "payment"}

@@ -181,13 +181,15 @@ namespace mltvrs::shop::stripe {
             /**
              * @brief Create a checkout request with the given redirect links and cart items.
              *
-             * @param success The location for Stripe to direct a successful checkout to.
-             * @param cancel  The location for Stripe to direct a canceled checkout to.
-             * @param items   The cart items to checkout.
+             * @param success     The location for Stripe to direct a successful checkout to.
+             * @param cancel      The location for Stripe to direct a canceled checkout to.
+             * @param cust_ref_id The reference ID of the client initiating the checkout.
+             * @param items       The cart items to checkout.
              */
             checkout_request(
                 boost::url         success,
                 boost::url         cancel,
+                std::string        cust_ref_id,
                 line_items_storage items) noexcept;
 
             /**
@@ -203,6 +205,8 @@ namespace mltvrs::shop::stripe {
             [[nodiscard]] auto& success_url() noexcept { return m_success_url; }
             [[nodiscard]] auto& cancel_url() const noexcept { return m_cancel_url; }
             [[nodiscard]] auto& cancel_url() noexcept { return m_cancel_url; }
+            [[nodiscard]] auto  client_reference_id() const noexcept -> const std::string&;
+            [[nodiscard]] auto& client_reference_id() noexcept { return m_client_reference_id; }
             [[nodiscard]] auto& line_items() const noexcept { return m_line_items; }
             [[nodiscard]] auto& line_items() noexcept { return m_line_items; }
             //! @}
@@ -302,6 +306,7 @@ namespace mltvrs::shop::stripe {
         private:
             boost::url         m_success_url;
             boost::url         m_cancel_url;
+            std::string        m_client_reference_id;
             line_items_storage m_line_items;
     };
 
