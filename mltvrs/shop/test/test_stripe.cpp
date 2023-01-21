@@ -61,8 +61,12 @@ CATCH_SCENARIO("payment session request message builds correctly")
             stripe::line_item{"third",  GENERATE(take(1, random(1u, 10u)))}
         };
 
-        const auto test_value =
-            stripe::checkout_request{success_url, cancel_url, client, line_items};
+        const auto test_value = stripe::checkout_request{
+            stripe::checkout_mode::payment,
+            success_url,
+            cancel_url,
+            client,
+            line_items};
 
         CATCH_THEN("constructing a payment session request preserves initializing values")
         {

@@ -140,6 +140,12 @@ namespace mltvrs::shop::stripe {
             unsigned    m_quantity;
     };
 
+    enum class checkout_mode {
+        payment,
+        setup,
+        subscription
+    };
+
     /**
      * @brief A request to check out and pay for a shopping cart.
      *
@@ -181,12 +187,14 @@ namespace mltvrs::shop::stripe {
             /**
              * @brief Create a checkout request with the given redirect links and cart items.
              *
+             * @param mode        The mode of checkout to initiate.
              * @param success     The location for Stripe to direct a successful checkout to.
              * @param cancel      The location for Stripe to direct a canceled checkout to.
              * @param cust_ref_id The reference ID of the client initiating the checkout.
              * @param items       The cart items to checkout.
              */
             checkout_request(
+                checkout_mode      mode,
                 boost::url         success,
                 boost::url         cancel,
                 std::string        cust_ref_id,
@@ -201,6 +209,8 @@ namespace mltvrs::shop::stripe {
              *
              * @{
              */
+            [[nodiscard]] auto& mode() const noexcept { return m_mode; }
+            [[nodiscard]] auto& mode() noexcept { return m_mode; }
             [[nodiscard]] auto& success_url() const noexcept { return m_success_url; }
             [[nodiscard]] auto& success_url() noexcept { return m_success_url; }
             [[nodiscard]] auto& cancel_url() const noexcept { return m_cancel_url; }
@@ -304,6 +314,7 @@ namespace mltvrs::shop::stripe {
             operator==(const checkout_request& lhs, const checkout_request& rhs) noexcept = default;
 
         private:
+            checkout_mode      m_mode;
             boost::url         m_success_url;
             boost::url         m_cancel_url;
             std::string        m_client_reference_id;
