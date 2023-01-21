@@ -136,7 +136,11 @@ namespace mltvrs::shop::stripe {
              * @param price_ident The item's price ID.
              * @param quant       The number of items in the cart.
              */
-            line_item(std::string price_ident, unsigned quant) noexcept;
+            explicit line_item(
+                std::string         price_id,
+                unsigned            quant,
+                adjustable_quantity adjust) noexcept;
+            explicit line_item(std::string price_id, unsigned quant) noexcept;
 
             /**
              * @name Properties
@@ -147,10 +151,13 @@ namespace mltvrs::shop::stripe {
              *
              * @{
              */
-            [[nodiscard]] auto& price_id() const noexcept { return m_price_id; }
-            [[nodiscard]] auto& price_id() noexcept { return m_price_id; }
+            [[nodiscard]] auto& price() const noexcept { return m_price; }
+            [[nodiscard]] auto& price() noexcept { return m_price; }
             [[nodiscard]] auto& quantity() const noexcept { return m_quantity; }
             [[nodiscard]] auto& quantity() noexcept { return m_quantity; }
+            [[nodiscard]] bool  has_adjustable_quantity() const noexcept;
+            [[nodiscard]] auto  quantity_adjustment() const -> const adjustable_quantity&;
+            [[nodiscard]] auto  quantity_adjustment() -> adjustable_quantity&;
             //! @}
 
             /**
@@ -165,8 +172,9 @@ namespace mltvrs::shop::stripe {
             operator==(const line_item& lhs, const line_item& rhs) noexcept = default;
 
         private:
-            std::string m_price_id;
-            unsigned    m_quantity;
+            std::string                        m_price;
+            unsigned                           m_quantity;
+            std::optional<adjustable_quantity> m_adjustable_quantity = {};
     };
 
     enum class checkout_mode {

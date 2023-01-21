@@ -95,7 +95,7 @@ CATCH_SCENARIO("payment session request message builds correctly")
                                              [](const auto& item)
                                              {
                                                  return json::object{
-                                                     {"price",    item.price_id()},
+                                                     {"price",    item.price()   },
                                                      {"quantity", item.quantity()}
                                                  };
                                              });

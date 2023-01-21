@@ -20,7 +20,7 @@ namespace {
             [](const auto& item)
             {
                 return json::object{
-                    {"price",    item.price_id()},
+                    {"price",    item.price()   },
                     {"quantity", item.quantity()}
                 };
             });
@@ -30,10 +30,36 @@ namespace {
 
 } // namespace
 
-mltvrs::shop::stripe::line_item::line_item(std::string price_ident, unsigned quant) noexcept
-    : m_price_id{std::move(price_ident)},
+mltvrs::shop::stripe::line_item::line_item(
+    std::string         price_id,
+    unsigned            quant,
+    adjustable_quantity adjust) noexcept
+    : m_price{std::move(price_id)},
+      m_quantity{quant},
+      m_adjustable_quantity{adjust}
+{
+}
+
+mltvrs::shop::stripe::line_item::line_item(std::string price_id, unsigned quant) noexcept
+    : m_price{std::move(price_id)},
       m_quantity{quant}
 {
+}
+
+[[nodiscard]] bool mltvrs::shop::stripe::line_item::has_adjustable_quantity() const noexcept
+{
+    return m_adjustable_quantity.has_value();
+}
+
+[[nodiscard]] auto mltvrs::shop::stripe::line_item::quantity_adjustment() const
+    -> const adjustable_quantity&
+{
+    return m_adjustable_quantity.value();
+}
+
+[[nodiscard]] auto mltvrs::shop::stripe::line_item::quantity_adjustment() -> adjustable_quantity&
+{
+    return m_adjustable_quantity.value();
 }
 
 mltvrs::shop::stripe::checkout_request::checkout_request(
