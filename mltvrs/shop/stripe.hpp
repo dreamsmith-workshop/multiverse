@@ -49,8 +49,14 @@ namespace mltvrs::shop::stripe {
              *
              * @{
              */
-            constexpr api_key(type k_type, mode op_mode, const rfc4648_literal_type& key) noexcept;
-            constexpr api_key(type k_type, mode op_mode, const rfc4648_string_type& key) noexcept;
+            explicit constexpr api_key(
+                type                        k_type,
+                mode                        op_mode,
+                const rfc4648_literal_type& key) noexcept;
+            explicit constexpr api_key(
+                type                       k_type,
+                mode                       op_mode,
+                const rfc4648_string_type& key) noexcept;
             //! @}
 
             /**
@@ -230,7 +236,7 @@ namespace mltvrs::shop::stripe {
              * @param cust_ref_id The reference ID of the client initiating the checkout.
              * @param items       The cart items to checkout.
              */
-            checkout_request(
+            explicit checkout_request(
                 checkout_mode      mode,
                 boost::url         success,
                 boost::url         cancel      = {},
