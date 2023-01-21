@@ -1,6 +1,8 @@
 #pragma once
 
-#include <span>
+#include <optional>
+#include <string>
+#include <string_view>
 
 #include <boost/beast.hpp>
 #include <boost/static_string.hpp>
@@ -93,6 +95,33 @@ namespace mltvrs::shop::stripe {
             rfc4648_string_type m_key;
             type                m_type;
             mode                m_mode;
+    };
+
+    class adjustable_quantity
+    {
+        public:
+            explicit constexpr adjustable_quantity(
+                bool                    enable,
+                std::optional<unsigned> max = {},
+                std::optional<unsigned> min = {});
+
+            [[nodiscard]] constexpr auto& enabled() const noexcept { return m_enabled; }
+            [[nodiscard]] constexpr auto& enabled() noexcept { return m_enabled; }
+            [[nodiscard]] constexpr bool  has_maximum() const noexcept { return !!m_maximum; };
+            [[nodiscard]] constexpr auto& maximum() const { return m_maximum.value(); }
+            [[nodiscard]] constexpr auto& maximum() { return m_maximum.value(); }
+            [[nodiscard]] constexpr bool  has_minimum() const noexcept { return !!m_minimum; };
+            [[nodiscard]] constexpr auto& minimum() const { return m_minimum.value(); }
+            [[nodiscard]] constexpr auto& minimum() { return m_minimum.value(); }
+
+            [[nodiscard]] friend bool operator==(
+                const adjustable_quantity& lhs,
+                const adjustable_quantity& rhs) noexcept = default;
+
+        private:
+            std::optional<unsigned> m_maximum;
+            std::optional<unsigned> m_minimum;
+            bool                    m_enabled;
     };
 
     /**
