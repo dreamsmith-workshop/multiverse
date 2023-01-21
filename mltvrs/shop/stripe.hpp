@@ -233,9 +233,9 @@ namespace mltvrs::shop::stripe {
             checkout_request(
                 checkout_mode      mode,
                 boost::url         success,
-                boost::url         cancel,
-                std::string        cust_ref_id,
-                line_items_storage items) noexcept;
+                boost::url         cancel      = {},
+                std::string        cust_ref_id = {},
+                line_items_storage items       = {}) noexcept;
 
             /**
              * @name Properties
