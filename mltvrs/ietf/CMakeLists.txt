@@ -21,6 +21,7 @@ target_sources(
                     ${MLTVRS_IETF_IPP}
 )
 target_link_libraries(mltvrs_ietf INTERFACE mltvrs Microsoft.GSL::GSL)
+add_library(mltvrs::ietf ALIAS mltvrs_ietf)
 
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
     add_executable(test_rfc4648 ${CMAKE_CURRENT_LIST_DIR}/test/test_rfc4648.cpp)

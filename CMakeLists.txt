@@ -84,24 +84,45 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs/shop)
 
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     include(CMakePackageConfigHelpers)
+    include(GNUInstallDirs)
 
     set(MLTVRS_CMAKE_CONFIG_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mltvrs)
 
     install(
         TARGETS
             mltvrs
-            mltvrs_ietf
-            mltvrs_shop
         EXPORT
             mltvrsTargets
         FILE_SET
             mltvrs_HEADERS
+        DESTINATION
+            ${CMAKE_INSTALL_LIBDIR}
+    )
+    install(
+        TARGETS
+            mltvrs_ietf
+        EXPORT
+            mltvrsTargets
         FILE_SET
             mltvrs_ietf_HEADERS
+        DESTINATION
+            ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT
+            ietf
+        OPTIONAL
+    )
+    install(
+        TARGETS
+            mltvrs_shop
+        EXPORT
+            mltvrsTargets
         FILE_SET
             mltvrs_shop_HEADERS
         DESTINATION
             ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT
+            shop
+        OPTIONAL
     )
     install(
         EXPORT

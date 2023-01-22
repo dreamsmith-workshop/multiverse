@@ -30,6 +30,7 @@ target_link_libraries(
             Microsoft.GSL::GSL
             fmt::fmt-header-only
 )
+add_library(mltvrs::shop ALIAS mltvrs_shop)
 
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
     add_executable(test_stripe ${CMAKE_CURRENT_LIST_DIR}/test/test_stripe.cpp)

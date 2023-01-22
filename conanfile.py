@@ -1,9 +1,11 @@
+import os
+
 from conan import ConanFile
-from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout
+from conan.tools.cmake import CMakeToolchain, CMake, CMakeDeps, cmake_layout
 
 
 class MultiverseConan(ConanFile):
-    name = "multiverse"
+    name = "mltvrs"
     version = "0.0.1"
     requires = "boost/1.81.0", "fmt/5.3.0", "ms-gsl/4.0.0"
     generators = "CMakeDeps"
@@ -40,6 +42,9 @@ class MultiverseConan(ConanFile):
         tc.cache_variables["CMAKE_CXX_STANDARD"] = 20
         tc.generate()
 
+        deps = CMakeDeps(self)
+        deps.generate()
+
     def build(self):
         cmake = CMake(self)
         cmake.configure()
@@ -50,4 +55,14 @@ class MultiverseConan(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["multiverse"]
+        self.cpp_info.set_property(
+            "cmake_build_modules",
+            [
+                os.path.join(
+                    "lib",
+                    "cmake",
+                    "mltvrs",
+                    "mltvrs",
+                    "project-config.cmake")
+            ]
+        )
