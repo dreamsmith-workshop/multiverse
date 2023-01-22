@@ -3,15 +3,35 @@ Language:        Cpp
 # BasedOnStyle:  LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
-AlignConsecutiveMacros: true
-AlignConsecutiveAssignments: true
-AlignConsecutiveBitFields: true
-AlignConsecutiveDeclarations: true
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments:
+  Enabled:         true
+  AcrossEmptyLines: false
+  AcrossComments:  true
+  AlignCompound:   true
+  PadOperators:    true
+AlignConsecutiveBitFields:
+  Enabled:         true
+  AcrossEmptyLines: false
+  AcrossComments:  true
+  AlignCompound:   true
+  PadOperators:    true
+AlignConsecutiveDeclarations:
+  Enabled:         true
+  AcrossEmptyLines: false
+  AcrossComments:  true
+  AlignCompound:   true
+  PadOperators:    true
+AlignConsecutiveMacros:
+  Enabled:         true
+  AcrossEmptyLines: false
+  AcrossComments:  true
+  AlignCompound:   true
+  PadOperators:    true
 AlignEscapedNewlines: Right
-AlignOperands:   Align
+AlignOperands:   AlignAfterOperator
 AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: false
-AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortEnumsOnASingleLine: false
 AllowShortBlocksOnASingleLine: Never
@@ -30,26 +50,26 @@ BinPackArguments: false
 BinPackParameters: false
 BraceWrapping:
   AfterCaseLabel:  false
-  AfterClass:      false
-  AfterControlStatement: Never
+  AfterClass:      true
+  AfterControlStatement: MultiLine
   AfterEnum:       false
-  AfterFunction:   false
+  AfterFunction:   true
   AfterNamespace:  false
   AfterObjCDeclaration: false
-  AfterStruct:     false
-  AfterUnion:      false
+  AfterStruct:     true
+  AfterUnion:      true
   AfterExternBlock: false
   BeforeCatch:     false
   BeforeElse:      false
-  BeforeLambdaBody: false
+  BeforeLambdaBody: true
   BeforeWhile:     false
   IndentBraces:    false
-  SplitEmptyFunction: false
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: false
-BreakBeforeBinaryOperators: None
-BreakBeforeConceptDeclarations: true
-BreakBeforeBraces: Stroustrup
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeConceptDeclarations: Always
+BreakBeforeBraces: Custom
 BreakBeforeInheritanceComma: false
 BreakInheritanceList: BeforeColon
 BreakBeforeTernaryOperators: true
@@ -59,65 +79,106 @@ BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: true
 ColumnLimit:     100
 CommentPragmas:  '(^ IWYU pragma:)|(NOLINT)|(NOLINTNEXTLINE)'
+QualifierAlignment: Custom
+QualifierOrder:
+  - 'static'
+  - 'inline'
+  - 'constexpr'
+  - 'const'
+  - 'volatile'
+  - 'type'
 CompactNamespaces: false
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DeriveLineEnding: true
 DerivePointerAlignment: false
 DisableFormat:   false
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
 ExperimentalAutoDetectBinPacking: false
+PackConstructorInitializers: BinPack
+BasedOnStyle:    ''
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AllowAllConstructorInitializersOnNextLine: false
 FixNamespaceComments: true
 ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+IfMacros:
+  - KJ_IF_MAYBE
 IncludeBlocks:   Regroup
 IncludeCategories:
-  - Regex:           '^[<"](catch2|gtest|gmock)/.*\.((h)|(hpp))'
+  - Regex:           '^[<"]c(assert|ctype|errno|fenv|float|inttypes|limits|locale|math|setjmp|signal|stdarg|stddef|stdint|stdio|stdlib|string|time|uchar|wchar|wctype|stdatomic|iso646|stdalign|stdbool)'
     Priority:        1
-    SortPriority:    8
-    CaseSensitive:   false
-  - Regex:           '^[<"]mltvrs/[a-zA-Z0-9_]+/[a-zA-Z0-9_]+/[a-zA-Z0-9_]+/.*\.hpp'
+    SortPriority:    1
+    CaseSensitive:   true
+  - Regex:           '^[<"](catch2|gtest|gmock)/.*\.((h)|(hpp))'
     Priority:        2
-    SortPriority:    5
-  - Regex:           '^[<"]mltvrs/[a-zA-Z0-9_]+/[a-zA-Z0-9_]+/.*\.hpp'
+    SortPriority:    13
+    CaseSensitive:   true
+  - Regex:           '^[<"]gsl/.*'
     Priority:        3
-    SortPriority:    4
-  - Regex:           '^[<"]mltvrs/[a-zA-Z0-9_]+/.*\.hpp'
-    Priority:        4
     SortPriority:    3
-  - Regex:           '^[<"]mltvrs/.*\.hpp'
+    CaseSensitive:   true
+  - Regex:           '^[<"]boost/.*\.hpp'
+    Priority:        4
+    SortPriority:    4
+    CaseSensitive:   true
+  - Regex:           '^[<"]fmt/.*'
     Priority:        5
-    SortPriority:    2
-    CaseSensitive:   false
-  - Regex:           '^<.*\.((h)|(hpp))'
+    SortPriority:    5
+    CaseSensitive:   true
+  - Regex:           '^[<"]cpprest/.*'
     Priority:        6
     SortPriority:    6
-    CaseSensitive:   false
-  - Regex:           '^<.*'
+    CaseSensitive:   true
+  - Regex:           '^[<"]mltvrs/[a-zA-Z0-9_]+/[a-zA-Z0-9_]+/[a-zA-Z0-9_]+/.*\.hpp'
     Priority:        7
-    SortPriority:    1
-    CaseSensitive:   false
-  - Regex:           '.*'
+    SortPriority:    10
+    CaseSensitive:   true
+  - Regex:           '^[<"]mltvrs/[a-zA-Z0-9_]+/[a-zA-Z0-9_]+/.*\.hpp'
     Priority:        8
+    SortPriority:    9
+    CaseSensitive:   true
+  - Regex:           '^[<"]mltvrs/[a-zA-Z0-9_]+/.*\.hpp'
+    Priority:        9
+    SortPriority:    8
+    CaseSensitive:   true
+  - Regex:           '^[<"]mltvrs/.*\.hpp'
+    Priority:        10
     SortPriority:    7
-    CaseSensitive:   false
+    CaseSensitive:   true
+  - Regex:           '^<.*\.((h)|(hpp))'
+    Priority:        11
+    SortPriority:    11
+    CaseSensitive:   true
+  - Regex:           '^<.*'
+    Priority:        12
+    SortPriority:    2
+    CaseSensitive:   true
+  - Regex:           '.*'
+    Priority:        13
+    SortPriority:    12
+    CaseSensitive:   true
 IncludeIsMainRegex: '(Test)?$'
 IncludeIsMainSourceRegex: ''
+IndentAccessModifiers: true
 IndentCaseLabels: true
 IndentCaseBlocks: true
 IndentGotoLabels: true
 IndentPPDirectives: None
 IndentExternBlock: AfterExternBlock
-IndentRequires:  true
+IndentRequiresClause: true
 IndentWidth:     4
 IndentWrappedFunctionNames: false
+InsertBraces:    true
 InsertTrailingCommas: None
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
+LambdaBodyIndentation: Signature
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 1
@@ -131,14 +192,21 @@ PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 300
 PenaltyBreakFirstLessLess: 120
+PenaltyBreakOpenParenthesis: 0
 PenaltyBreakString: 1000
 PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 PenaltyIndentedWhitespace: 0
 PointerAlignment: Left
+PPIndentWidth:   -1
+ReferenceAlignment: Pointer
 ReflowComments:  true
-SortIncludes:    true
+RemoveBracesLLVM: false
+RequiresClausePosition: OwnLine
+SeparateDefinitionBlocks: Leave
+ShortNamespaceLines: 0
+SortIncludes:    CaseSensitive
 SortJavaStaticImport: Before
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
@@ -150,20 +218,35 @@ SpaceBeforeCpp11BracedList: false
 SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: Never
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterForeachMacros: true
+  AfterFunctionDefinitionName: false
+  AfterFunctionDeclarationName: false
+  AfterIfMacros:   true
+  AfterOverloadedOperator: false
+  AfterRequiresInClause: false
+  AfterRequiresInExpression: false
+  BeforeNonEmptyParentheses: false
 SpaceAroundPointerQualifiers: Default
 SpaceBeforeRangeBasedForLoopColon: false
 SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
-SpacesInAngles:  false
+SpacesInAngles:  Never
 SpacesInConditionalStatement: false
 SpacesInContainerLiterals: false
 SpacesInCStyleCastParentheses: false
+SpacesInLineCommentPrefix:
+  Minimum:         1
+  Maximum:         1
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpaceBeforeSquareBrackets: false
 BitFieldColonSpacing: Both
 Standard:        Latest
+StatementAttributeLikeMacros:
+  - Q_EMIT
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
