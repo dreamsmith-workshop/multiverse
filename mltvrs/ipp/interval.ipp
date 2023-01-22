@@ -7,10 +7,10 @@ template<typename T>
     Expects(rhs.max >= rhs.min);
 
     if((lhs > rhs.max) && (lhs > rhs.min)) {
-        return ordering::greater;
+        return std::partial_ordering::greater;
     }
     if((lhs < rhs.max) && (lhs < rhs.min)) {
-        return ordering::less;
+        return std::partial_ordering::less;
     }
 
     return std::partial_ordering::unordered;
