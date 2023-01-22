@@ -353,9 +353,6 @@ namespace mltvrs::shop::stripe {
             void swap(checkout_request& other) noexcept;
             //! @}
 
-            [[nodiscard]] friend bool
-            operator==(const checkout_request& lhs, const checkout_request& rhs) noexcept = default;
-
         private:
             checkout_mode      m_mode;
             boost::url         m_success_url;
