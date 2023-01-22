@@ -21,6 +21,8 @@ target_sources(
                 FILES
                     ${MLTVRS_SHOP_HPP}
                     ${MLTVRS_SHOP_IPP}
+                BASE_DIRS
+                    ${CMAKE_SOURCE_DIR}
 )
 target_link_libraries(
     mltvrs_shop

@@ -19,6 +19,8 @@ target_sources(
                 FILES
                     ${MLTVRS_IETF_HPP}
                     ${MLTVRS_IETF_IPP}
+                BASE_DIRS
+                    ${CMAKE_SOURCE_DIR}
 )
 target_link_libraries(mltvrs_ietf INTERFACE mltvrs Microsoft.GSL::GSL)
 add_library(mltvrs::ietf ALIAS mltvrs_ietf)

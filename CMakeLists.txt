@@ -95,8 +95,8 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
             mltvrsTargets
         FILE_SET
             mltvrs_HEADERS
-        DESTINATION
-            ${CMAKE_INSTALL_LIBDIR}
+            DESTINATION
+                ${CMAKE_INSTALL_INCLUDEDIR}
     )
     install(
         TARGETS
@@ -105,11 +105,11 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
             mltvrsTargets
         FILE_SET
             mltvrs_ietf_HEADERS
-        DESTINATION
-            ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT
-            ietf
-        OPTIONAL
+            DESTINATION
+                ${CMAKE_INSTALL_INCLUDEDIR}
+            COMPONENT
+                ietf
+            OPTIONAL
     )
     install(
         TARGETS
@@ -118,11 +118,11 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
             mltvrsTargets
         FILE_SET
             mltvrs_shop_HEADERS
-        DESTINATION
-            ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT
-            shop
-        OPTIONAL
+            DESTINATION
+                ${CMAKE_INSTALL_INCLUDEDIR}
+            COMPONENT
+                shop
+            OPTIONAL
     )
     install(
         EXPORT
