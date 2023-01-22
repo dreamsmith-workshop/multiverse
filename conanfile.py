@@ -55,6 +55,16 @@ class MultiverseConan(ConanFile):
         cmake.install()
 
     def package_info(self):
+        self.cpp_info.components["ietf"].set_property(
+            "cmake_target_name", "mltvrs_ietf")
+        self.cpp_info.components["shop"].set_property(
+            "cmake_target_aliases", ["mltvrs::ietf"])
+
+        self.cpp_info.components["shop"].set_property(
+            "cmake_target_name", "mltvrs_shop")
+        self.cpp_info.components["shop"].set_property(
+            "cmake_target_aliases", ["mltvrs::shop"])
+
         self.cpp_info.set_property(
             "cmake_build_modules",
             [
