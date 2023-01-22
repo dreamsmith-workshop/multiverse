@@ -38,6 +38,7 @@ class MultiverseConan(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
+        tc.cache_variables["CMAKE_CXX_STANDARD"] = 20
         tc.generate()
 
     def build(self):
