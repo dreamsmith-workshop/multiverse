@@ -76,7 +76,16 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
 
     set(MLTVRS_CMAKE_CONFIG_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mltvrs)
 
-    install(TARGETS mltvrs EXPORT mltvrsTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(
+        TARGETS
+            mltvrs
+            mltvrs_ietf
+            mltvrs_shop
+        EXPORT
+            mltvrsTargets
+        DESTINATION
+            ${CMAKE_INSTALL_LIBDIR}
+    )
     install(
         EXPORT
             mltvrsTargets
