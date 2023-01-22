@@ -113,9 +113,9 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     )
     install(
         DIRECTORY
-            ${CMAKE_CURRENT_LIST_DIR}/cmake
+            ${CMAKE_CURRENT_LIST_DIR}/cmake/
         DESTINATION
-            ${MLTVRS_CMAKE_CONFIG_DESTINATION}
+            ${MLTVRS_CMAKE_CONFIG_DESTINATION}/mltvrs
         REGEX
             ".+\.in\..+"
             EXCLUDE
