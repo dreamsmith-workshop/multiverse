@@ -78,10 +78,10 @@ mltvrs::shop::stripe::line_item::line_item(std::string price_id, unsigned quant)
 void mltvrs::shop::stripe::line_item::quantity(unsigned new_quant)
 {
     if(new_quant > *m_adjustable_quantity) {
-        throw std::invalid_argument{"given quantity is greater than the maximum quantity"};
+        throw std::out_of_range{"given quantity is greater than the maximum quantity"};
     }
     if(new_quant < *m_adjustable_quantity) {
-        throw std::invalid_argument{"given quantity is less than the minimum quantity"};
+        throw std::out_of_range{"given quantity is less than the minimum quantity"};
     }
 
     m_quantity = new_quant;
@@ -107,10 +107,10 @@ void mltvrs::shop::stripe::line_item::quantity(unsigned new_quant)
 void mltvrs::shop::stripe::line_item::adjustable_quantity(interval<unsigned> new_adj)
 {
     if(quantity() > new_adj) {
-        throw std::invalid_argument{"existing quantity is greater than the new maximum quantity"};
+        throw std::out_of_range{"existing quantity is greater than the new maximum quantity"};
     }
     if(quantity() < new_adj) {
-        throw std::invalid_argument{"existing quantity is less than the new minimum quantity"};
+        throw std::out_of_range{"existing quantity is less than the new minimum quantity"};
     }
 
     m_adjustable_quantity = new_adj;
