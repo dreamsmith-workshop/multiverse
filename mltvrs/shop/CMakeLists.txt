@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.23)
 
 project(multiverse_shop LANGUAGES CXX VERSION 0.0.1)
 
@@ -11,6 +11,17 @@ set(MLTVRS_SHOP_IPP ${CMAKE_CURRENT_LIST_DIR}/ipp/stripe.ipp)
 set(MLTVRS_SHOP_CPP ${CMAKE_CURRENT_LIST_DIR}/src/stripe.cpp)
 
 add_library(mltvrs_shop ${MLTVRS_SHOP_HPP} ${MLTVRS_SHOP_IPP} ${MLTVRS_SHOP_CPP})
+target_sources(
+    mltvrs_shop
+        INTERFACE
+            FILE_SET
+                mltvrs_shop_HEADERS
+                TYPE
+                    HEADERS
+                FILES
+                    ${MLTVRS_SHOP_HPP}
+                    ${MLTVRS_SHOP_IPP}
+)
 target_link_libraries(
     mltvrs_shop
         PUBLIC

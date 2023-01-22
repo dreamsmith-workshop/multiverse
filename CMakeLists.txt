@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.23)
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/project-config.cmake)
 
@@ -43,6 +43,17 @@ set(
 set(MLTVRS_CPP)
 
 add_library(mltvrs INTERFACE ${MLTVRS_HPP} ${MLTVRS_IPP} ${MLTVRS_CPP})
+target_sources(
+    mltvrs
+        INTERFACE
+            FILE_SET
+                mltvrs_HEADERS
+                TYPE
+                    HEADERS
+                FILES
+                    ${MLTVRS_HPP}
+                    ${MLTVRS_IPP}
+)
 target_include_directories(
     mltvrs
         INTERFACE
@@ -83,6 +94,12 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
             mltvrs_shop
         EXPORT
             mltvrsTargets
+        FILE_SET
+            mltvrs_HEADERS
+        FILE_SET
+            mltvrs_ietf_HEADERS
+        FILE_SET
+            mltvrs_shop_HEADERS
         DESTINATION
             ${CMAKE_INSTALL_LIBDIR}
     )
@@ -93,18 +110,6 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
             mltvrs::
         DESTINATION
             ${MLTVRS_CMAKE_CONFIG_DESTINATION}
-    )
-    install(
-        DIRECTORY
-            ${CMAKE_CURRENT_LIST_DIR}/mltvrs
-        DESTINATION
-            "${CMAKE_INSTALL_INCLUDEDIR}"
-        REGEX
-            ".+\.cpp"
-            EXCLUDE
-        REGEX
-            "test"
-            EXCLUDE
     )
     install(
         DIRECTORY
