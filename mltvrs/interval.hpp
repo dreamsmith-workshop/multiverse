@@ -33,6 +33,7 @@ namespace mltvrs {
                 return (rhs.type == end_type::closed) && (lhs == rhs.value);
             }
             [[nodiscard]] friend constexpr auto operator<=>(T lhs, end_point rhs) noexcept
+                -> std::weak_ordering
             {
                 return lhs <=> rhs.value;
             }
