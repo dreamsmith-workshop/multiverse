@@ -201,7 +201,7 @@ function(mltvrs_configure_project)
         )
     endif()
     if(EXISTS ${CMAKE_SOURCE_DIR}/conan/conan.lock)
-        list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/conan)
+        list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/generators)
     endif()
     mltvrs_report_option(ENABLE_CONAN_OVERRIDE)
 
