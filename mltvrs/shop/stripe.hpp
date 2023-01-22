@@ -110,17 +110,26 @@ namespace mltvrs::shop::stripe {
     class line_item
     {
         public:
+            //! Sentinel quantity adjustment configuration indicating no limits are specified.
             static constexpr auto default_adjustable_quantity =
                 interval<unsigned>{.max = std::numeric_limits<unsigned>::max(), .min = 0};
 
             /**
+             * @name Constructors
+             *
              * @brief Construct a line item from its price ID and quantity.
              *
              * @param price_ident The item's price ID.
              * @param quant       The number of items in the cart.
+             * @param adjust      The items' quantity adjustment configurations.
+             *
+             * @throw std::invalid_argument Given quantity is outside the given adjustment range.
+             *
+             * @{
              */
             explicit line_item(std::string price_id, unsigned quant, interval<unsigned> adjust);
             explicit line_item(std::string price_id, unsigned quant) noexcept;
+            //! @}
 
             /**
              * @name Properties
@@ -128,6 +137,8 @@ namespace mltvrs::shop::stripe {
              * @brief Access line item properties.
              *
              * @return Returns the requested line item property.
+             *
+             * @throw std::out_of_range Item quantity is outside the quantity adjustment range.
              *
              * @{
              */
@@ -147,10 +158,13 @@ namespace mltvrs::shop::stripe {
             std::optional<interval<unsigned>> m_adjustable_quantity = {};
     };
 
+    /**
+     * @brief Available modes of checking out a cart.
+     */
     enum class checkout_mode {
-        payment,
-        setup,
-        subscription
+        payment,     //!< One-time purchase.
+        setup,       //!< Save payment details for later use.
+        subscription //!< Set up fixed-price subscriptions.
     };
 
     /**
