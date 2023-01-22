@@ -10,6 +10,21 @@ namespace {
     namespace ranges = std::ranges;
     namespace json   = boost::json;
 
+    [[nodiscard]] auto adjustable_quantity_to_json(mltvrs::interval<unsigned> configs)
+    {
+        if(configs == mltvrs::shop::stripe::line_item::default_adjustable_quantity) {
+            return json::object{
+                {"enabled", true}
+            };
+        }
+
+        return json::object{
+            {"enabled", true             },
+            {"maximum", configs.max.value},
+            {"minimum", configs.min.value}
+        };
+    }
+
     [[nodiscard]] auto items_to_json(const mltvrs::shop::stripe::checkout_request& request)
     {
         auto ret = json::array{};
@@ -19,10 +34,18 @@ namespace {
             std::back_inserter(ret),
             [](const auto& item)
             {
-                return json::object{
+                auto ret = json::object{
                     {"price",    item.price()   },
                     {"quantity", item.quantity()}
                 };
+                if(item.has_adjustable_quantity()) {
+                    ret.insert({
+                        {"adjustable_quantity",
+                         adjustable_quantity_to_json(item.adjustable_quantity())}
+                    });
+                }
+
+                return ret;
             });
 
         return ret;
@@ -31,13 +54,19 @@ namespace {
 } // namespace
 
 mltvrs::shop::stripe::line_item::line_item(
-    std::string         price_id,
-    unsigned            quant,
-    adjustable_quantity adjust) noexcept
+    std::string        price_id,
+    unsigned           quant,
+    interval<unsigned> adjust)
     : m_price{std::move(price_id)},
       m_quantity{quant},
       m_adjustable_quantity{adjust}
 {
+    if(quantity() > *m_adjustable_quantity) {
+        throw std::invalid_argument{"given quantity is greater than the maximum quantity"};
+    }
+    if(quantity() < *m_adjustable_quantity) {
+        throw std::invalid_argument{"given quantity is less than the minimum quantity"};
+    }
 }
 
 mltvrs::shop::stripe::line_item::line_item(std::string price_id, unsigned quant) noexcept
@@ -46,20 +75,45 @@ mltvrs::shop::stripe::line_item::line_item(std::string price_id, unsigned quant)
 {
 }
 
+void mltvrs::shop::stripe::line_item::quantity(unsigned new_quant)
+{
+    if(new_quant > *m_adjustable_quantity) {
+        throw std::invalid_argument{"given quantity is greater than the maximum quantity"};
+    }
+    if(new_quant < *m_adjustable_quantity) {
+        throw std::invalid_argument{"given quantity is less than the minimum quantity"};
+    }
+
+    m_quantity = new_quant;
+}
+
 [[nodiscard]] bool mltvrs::shop::stripe::line_item::has_adjustable_quantity() const noexcept
 {
     return m_adjustable_quantity.has_value();
 }
 
-[[nodiscard]] auto mltvrs::shop::stripe::line_item::quantity_adjustment() const
-    -> const adjustable_quantity&
+[[nodiscard]] auto mltvrs::shop::stripe::line_item::if_adjustable_quantity() const noexcept
+    -> const interval<unsigned>*
+{
+    return has_adjustable_quantity() ? std::addressof(*m_adjustable_quantity) : nullptr;
+}
+
+[[nodiscard]] auto mltvrs::shop::stripe::line_item::adjustable_quantity() const
+    -> const interval<unsigned>&
 {
     return m_adjustable_quantity.value();
 }
 
-[[nodiscard]] auto mltvrs::shop::stripe::line_item::quantity_adjustment() -> adjustable_quantity&
+void mltvrs::shop::stripe::line_item::adjustable_quantity(interval<unsigned> new_adj)
 {
-    return m_adjustable_quantity.value();
+    if(quantity() > new_adj) {
+        throw std::invalid_argument{"existing quantity is greater than the new maximum quantity"};
+    }
+    if(quantity() < new_adj) {
+        throw std::invalid_argument{"existing quantity is less than the new minimum quantity"};
+    }
+
+    m_adjustable_quantity = new_adj;
 }
 
 mltvrs::shop::stripe::checkout_request::checkout_request(
@@ -117,10 +171,17 @@ void mltvrs::shop::stripe::checkout_request::swap(checkout_request& other) noexc
 [[nodiscard]] auto mltvrs::shop::stripe::detail::serialize_payload(const checkout_request& request)
     -> std::string
 {
-    return json::serialize(json::object{
+    auto ret = json::object{
         {"success_url", request.success_url().buffer()},
         {"cancel_url",  request.cancel_url().buffer() },
         {"line_items",  items_to_json(request)        },
         {"mode",        "payment"                     }
-    });
+    };
+    if(!request.client_reference_id().empty()) {
+        ret.insert({
+            {"client_reference_id", request.client_reference_id()}
+        });
+    }
+
+    return json::serialize(ret);
 }

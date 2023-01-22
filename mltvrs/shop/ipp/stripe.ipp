@@ -56,22 +56,6 @@ constexpr void mltvrs::shop::stripe::api_key::assign_key(const rfc4648_string_ty
     return ret;
 }
 
-constexpr mltvrs::shop::stripe::adjustable_quantity::adjustable_quantity(
-    bool                    enable,
-    std::optional<unsigned> max,
-    std::optional<unsigned> min)
-    : m_maximum{max},
-      m_minimum{min},
-      m_enabled{enable}
-{
-    if(has_maximum() && (maximum() > 999'999)) {
-        throw std::invalid_argument{"quantity cannot be more than 999,999"};
-    }
-    if(has_maximum() && has_minimum() && (maximum() <= minimum())) {
-        throw std::invalid_argument{"quantity maximum must be greater than quantity minimum"};
-    }
-}
-
 auto mltvrs::shop::stripe::checkout_request::insert(auto&&... insert_args) -> iterator
 {
     return m_line_items.insert(std::forward<decltype(insert_args)>(insert_args)...);

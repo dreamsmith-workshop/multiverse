@@ -8,6 +8,7 @@
 #include <boost/static_string.hpp>
 #include <boost/url.hpp>
 
+#include <mltvrs/interval.hpp>
 #include <mltvrs/string_literal.hpp>
 
 namespace mltvrs::shop::stripe {
@@ -103,49 +104,22 @@ namespace mltvrs::shop::stripe {
             mode                m_mode;
     };
 
-    class adjustable_quantity
-    {
-        public:
-            explicit constexpr adjustable_quantity(
-                bool                    enable,
-                std::optional<unsigned> max = {},
-                std::optional<unsigned> min = {});
-
-            [[nodiscard]] constexpr auto& enabled() const noexcept { return m_enabled; }
-            [[nodiscard]] constexpr auto& enabled() noexcept { return m_enabled; }
-            [[nodiscard]] constexpr bool  has_maximum() const noexcept { return !!m_maximum; };
-            [[nodiscard]] constexpr auto& maximum() const { return m_maximum.value(); }
-            [[nodiscard]] constexpr auto& maximum() { return m_maximum.value(); }
-            [[nodiscard]] constexpr bool  has_minimum() const noexcept { return !!m_minimum; };
-            [[nodiscard]] constexpr auto& minimum() const { return m_minimum.value(); }
-            [[nodiscard]] constexpr auto& minimum() { return m_minimum.value(); }
-
-            [[nodiscard]] friend bool operator==(
-                const adjustable_quantity& lhs,
-                const adjustable_quantity& rhs) noexcept = default;
-
-        private:
-            std::optional<unsigned> m_maximum;
-            std::optional<unsigned> m_minimum;
-            bool                    m_enabled;
-    };
-
     /**
      * @brief A line item in a shopping cart.
      */
     class line_item
     {
         public:
+            static constexpr auto default_adjustable_quantity =
+                interval<unsigned>{.max = std::numeric_limits<unsigned>::max(), .min = 0};
+
             /**
              * @brief Construct a line item from its price ID and quantity.
              *
              * @param price_ident The item's price ID.
              * @param quant       The number of items in the cart.
              */
-            explicit line_item(
-                std::string         price_id,
-                unsigned            quant,
-                adjustable_quantity adjust) noexcept;
+            explicit line_item(std::string price_id, unsigned quant, interval<unsigned> adjust);
             explicit line_item(std::string price_id, unsigned quant) noexcept;
 
             /**
@@ -160,27 +134,17 @@ namespace mltvrs::shop::stripe {
             [[nodiscard]] auto& price() const noexcept { return m_price; }
             [[nodiscard]] auto& price() noexcept { return m_price; }
             [[nodiscard]] auto& quantity() const noexcept { return m_quantity; }
-            [[nodiscard]] auto& quantity() noexcept { return m_quantity; }
+            void                quantity(unsigned new_quant);
             [[nodiscard]] bool  has_adjustable_quantity() const noexcept;
-            [[nodiscard]] auto  quantity_adjustment() const -> const adjustable_quantity&;
-            [[nodiscard]] auto  quantity_adjustment() -> adjustable_quantity&;
+            [[nodiscard]] auto if_adjustable_quantity() const noexcept -> const interval<unsigned>*;
+            [[nodiscard]] auto adjustable_quantity() const -> const interval<unsigned>&;
+            void               adjustable_quantity(interval<unsigned> new_adj);
             //! @}
 
-            /**
-             * @brief Compare whether two line items have the same price ID and quantity.
-             *
-             * @param lhs The left-hand-size line item to compare.
-             * @param rhs The right-hand-size line item to compare.
-             *
-             * @return Returns the comparison result.
-             */
-            [[nodiscard]] friend bool
-            operator==(const line_item& lhs, const line_item& rhs) noexcept = default;
-
         private:
-            std::string                        m_price;
-            unsigned                           m_quantity;
-            std::optional<adjustable_quantity> m_adjustable_quantity = {};
+            std::string                       m_price;
+            unsigned                          m_quantity;
+            std::optional<interval<unsigned>> m_adjustable_quantity = {};
     };
 
     enum class checkout_mode {

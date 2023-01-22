@@ -72,7 +72,19 @@ CATCH_SCENARIO("payment session request message builds correctly")
         {
             CATCH_REQUIRE(test_value.success_url() == success_url);
             CATCH_REQUIRE(test_value.cancel_url() == cancel_url);
-            CATCH_REQUIRE(test_value.line_items() == line_items);
+            CATCH_REQUIRE(test_value.line_items().size() == line_items.size());
+            for(auto i = 0; i < std::ssize(test_value.line_items()); ++i) {
+                const auto& test_val = test_value.line_items().at(i);
+                const auto& ref_val  = line_items.at(i);
+
+                CATCH_REQUIRE(test_val.price() == ref_val.price());
+                CATCH_REQUIRE(test_val.quantity() == ref_val.quantity());
+                CATCH_REQUIRE(
+                    test_val.has_adjustable_quantity() == ref_val.has_adjustable_quantity());
+                if(test_val.has_adjustable_quantity()) {
+                    CATCH_REQUIRE(test_val.adjustable_quantity() == ref_val.adjustable_quantity());
+                }
+            }
         }
 
         CATCH_AND_GIVEN("an API key")
