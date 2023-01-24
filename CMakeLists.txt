@@ -166,6 +166,11 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
         ${CMAKE_CURRENT_BINARY_DIR}/mltvrs.pc
         @ONLY
     )
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/mltvrs_shop.in.pc
+        ${CMAKE_CURRENT_BINARY_DIR}/mltvrs_shop.pc
+        @ONLY
+    )
     install(
         FILES
             ${CMAKE_CURRENT_BINARY_DIR}/mltvrs.pc
