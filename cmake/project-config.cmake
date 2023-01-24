@@ -28,7 +28,7 @@ function(mltvrs_configure_project)
     mltvrs_report_option(STDLIB)
 
     if(DEFINED ${PARSED_PREFIX}_STDLIB_PATH AND EXISTS ${${PARSED_PREFIX}_STDLIB_PATH})
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             set(
                 CMAKE_EXE_LINKER_FLAGS
                     "${CMAKE_EXE_LINKER_FLAGS} -L ${${PARSED_PREFIX}_STDLIB_PATH}"
