@@ -75,7 +75,9 @@ class MultiverseConan(ConanFile):
             "cmake_target_name", "mltvrs::mltvrs")
         self.cpp_info.components["_mltvrs"].set_property(
             "pkg_config_name", "mltvrs")
-        self.cpp_info.components["_mltvrs"].requires = ["boost::boost"]
+        self.cpp_info.components["_mltvrs"].requires = [
+            "boost::boost",
+            "ms-gsl::_ms-gsl"]
 
         self.cpp_info.components["shop"].builddirs.append(
             os.path.join("lib", "cmake", "mltvrs"))
