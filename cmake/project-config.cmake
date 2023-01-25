@@ -15,7 +15,7 @@ function(mltvrs_configure_project)
     endmacro()
 
     if(DEFINED ${PARSED_PREFIX}_STDLIB AND NOT ${PARSED_PREFIX}_STDLIB STREQUAL "default")
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             set(
                 CMAKE_CXX_FLAGS
                     "${CMAKE_CXX_FLAGS} -stdlib=${${PARSED_PREFIX}_STDLIB}"
@@ -28,7 +28,7 @@ function(mltvrs_configure_project)
     mltvrs_report_option(STDLIB)
 
     if(DEFINED ${PARSED_PREFIX}_STDLIB_PATH AND EXISTS ${${PARSED_PREFIX}_STDLIB_PATH})
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             set(
                 CMAKE_EXE_LINKER_FLAGS
                     "${CMAKE_EXE_LINKER_FLAGS} -L ${${PARSED_PREFIX}_STDLIB_PATH}"
@@ -55,7 +55,7 @@ function(mltvrs_configure_project)
 
     if(DEFINED ${PARSED_PREFIX}_STDLIB_INCLUDE AND EXISTS ${${PARSED_PREFIX}_STDLIB_INCLUDE})
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(
@@ -72,7 +72,7 @@ function(mltvrs_configure_project)
     mltvrs_report_option(STDLIB_INCLUDE)
 
     if(${PARSED_PREFIX}_ENABLE_STATIC_STDLIB)
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             set(
                 CMAKE_CXX_FLAGS
                     "${CMAKE_CXX_FLAGS} -static"
@@ -87,7 +87,7 @@ function(mltvrs_configure_project)
     # handle enable-all-warnings
     if(${PARSED_PREFIX}_ENABLE_WALL)
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(
@@ -106,7 +106,7 @@ function(mltvrs_configure_project)
     # handle treat-warnings-as-errors
     if(${PARSED_PREFIX}_ENABLE_WERROR)
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(
@@ -131,7 +131,7 @@ function(mltvrs_configure_project)
                     PARENT_SCOPE
             )
         endif()
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         if(${PARSED_PREFIX}_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
             set(
                 CMAKE_CXX_FLAGS
@@ -151,7 +151,7 @@ function(mltvrs_configure_project)
     # handle exception disabling
     if(${PARSED_PREFIX}_DISABLE_EXCEPTIONS)
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(
@@ -170,7 +170,7 @@ function(mltvrs_configure_project)
     # handle exception disabling
     if(${PARSED_PREFIX}_DISABLE_RTTI)
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(
