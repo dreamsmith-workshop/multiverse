@@ -1,0 +1,7 @@
+---
+Checks           : '-*,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,misc-*,modernize-*,-modernize-use-trailing-return-type,performance-*,portability-*,readability-*'
+HeaderFilterRegex: 'mltvrs/((.*\.hpp)|(ipp/.*\.ipp))$'
+CheckOptions:
+  - key  : misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value: '1'
+...
