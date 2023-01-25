@@ -30,7 +30,7 @@ namespace mltvrs {
             /**
              * @brief Default-construct zero-length string literal.
              */
-            constexpr basic_string_literal() noexcept
+            consteval basic_string_literal() noexcept
                 requires(N == 0)
             = default;
 
@@ -39,7 +39,7 @@ namespace mltvrs {
              *
              * @param arr A constant character array to initialize from.
              */
-            constexpr basic_string_literal(const CharT (&arr)[N + 1]) noexcept;
+            consteval basic_string_literal(const CharT (&arr)[N + 1]) noexcept;
 
             /**
              * @name Literal Access
@@ -81,11 +81,11 @@ namespace mltvrs {
 
         private:
             template<std::size_t... I>
-            constexpr basic_string_literal(
+            consteval basic_string_literal(
                 const CharT (&arr)[N + 1],
                 std::index_sequence<I...> /*unused*/) noexcept;
             template<typename... C>
-            constexpr basic_string_literal(C... c) noexcept;
+            consteval basic_string_literal(C... c) noexcept;
     };
 
     /**

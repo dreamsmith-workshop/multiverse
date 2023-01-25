@@ -1,6 +1,6 @@
 
 template<typename CharT, std::size_t N>
-constexpr mltvrs::basic_string_literal<CharT, N>::basic_string_literal(
+consteval mltvrs::basic_string_literal<CharT, N>::basic_string_literal(
     const CharT (&arr)[N + 1]) noexcept
     : basic_string_literal{arr, std::make_index_sequence<N>{}}
 {
@@ -8,7 +8,7 @@ constexpr mltvrs::basic_string_literal<CharT, N>::basic_string_literal(
 
 template<typename CharT, std::size_t N>
 template<std::size_t... I>
-constexpr mltvrs::basic_string_literal<CharT, N>::basic_string_literal(
+consteval mltvrs::basic_string_literal<CharT, N>::basic_string_literal(
     const CharT (&arr)[N + 1],
     std::index_sequence<I...> /*unused*/) noexcept
     : basic_string_literal{arr[I]...}
@@ -17,7 +17,7 @@ constexpr mltvrs::basic_string_literal<CharT, N>::basic_string_literal(
 
 template<typename CharT, std::size_t N>
 template<typename... C>
-constexpr mltvrs::basic_string_literal<CharT, N>::basic_string_literal(C... c) noexcept
+consteval mltvrs::basic_string_literal<CharT, N>::basic_string_literal(C... c) noexcept
     : value{c..., CharT{}}
 {
 }
