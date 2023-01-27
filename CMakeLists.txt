@@ -24,6 +24,11 @@ mltvrs_configure_project(PREFIX MLTVRS REPORT_ALL TRUE)
 
 find_package(Microsoft.GSL REQUIRED)
 
+include(CTest)
+if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
+    find_package(Catch2 REQUIRED)
+endif()
+
 ##################
 # Create Targets #
 ##################

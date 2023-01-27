@@ -145,10 +145,6 @@ function(mltvrs_configure_project)
     mltvrs_report_option(DISABLE_RTTI)
 
     # handle testing
-    include(CTest)
-    if(ENABLE_TESTING AND ${PARSED_PREFIX}_ENABLE_TESTING)
-        find_package(Catch2 REQUIRED)
-    endif()
     mltvrs_report_option(ENABLE_TESTING)
 
     set(
