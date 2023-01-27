@@ -144,26 +144,6 @@ function(mltvrs_configure_project)
     endif()
     mltvrs_report_option(DISABLE_RTTI)
 
-    # handle Conan integration
-    if(${PARSED_PREFIX}_ENABLE_CONAN_OVERRIDE)
-        if(NOT EXISTS ${CMAKE_SOURCE_DIR}/conan)
-            file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/conan)
-        endif()
-        execute_process(
-            COMMAND
-                conan install ../ --build missing -s build_type=${CMAKE_BUILD_TYPE}
-            WORKING_DIRECTORY 
-                ${CMAKE_SOURCE_DIR}/conan
-            COMMAND_ERROR_IS_FATAL
-                ANY
-        )
-        file(REMOVE ${CMAKE_SOURCE_DIR}/CMakeUserPresets.json)
-    endif()
-    if(EXISTS ${CMAKE_SOURCE_DIR}/conan/conan.lock)
-        list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/generators)
-    endif()
-    mltvrs_report_option(ENABLE_CONAN_OVERRIDE)
-
     # handle testing
     include(CTest)
     if(ENABLE_TESTING AND ${PARSED_PREFIX}_ENABLE_TESTING)
@@ -185,14 +165,6 @@ function(mltvrs_configure_project)
             CACHE
                 STRING
                 "Flags used by the CXX compiler during all build types."
-            FORCE
-    )
-    set(
-        CMAKE_PREFIX_PATH
-            "${CMAKE_PREFIX_PATH}"
-            CACHE
-                PATH
-                "Additional paths to look for packages in."
             FORCE
     )
 
