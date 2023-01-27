@@ -178,3 +178,27 @@ function(mltvrs_configure_project)
         message(STATUS "${OPTION_NAME}${PADDING} : ${${OPTION_NAME}}")
     endforeach()
 endfunction()
+
+function(mltvrs_add_install_dependencies)
+    set(OPTIONS          )
+    set(ONE_VALUE_ARGS   PREFIX)
+    set(MULTI_VALUE_ARGS PACKAGES)
+    cmake_parse_arguments(
+        PARSE_ARGV
+            0
+        PARSED
+            "${OPTIONS}"
+            "${ONE_VALUE_ARGS}"
+            "${MULTI_VALUE_ARGS}"
+    )
+
+    message(STATUS "adding : ${PARSED_PACKAGES}")
+    list(APPEND ${PARSED_PREFIX}_INSTALL_DEPENDENCIES ${PARSED_PACKAGES})
+    set(
+        ${PARSED_PREFIX}_INSTALL_DEPENDENCIES
+            ${${PARSED_PREFIX}_INSTALL_DEPENDENCIES}
+            CACHE
+                INTERNAL
+                "dependencies required to consume this library"
+    )
+endfunction()

@@ -6,6 +6,15 @@ find_package(Boost         REQUIRED)
 find_package(Microsoft.GSL REQUIRED)
 find_package(fmt           REQUIRED)
 
+mltvrs_add_install_dependencies(
+    PREFIX
+        MLTVRS
+    PACKAGES
+        Boost
+        Microsoft.GSL
+        fmt
+)
+
 set(MLTVRS_SHOP_HPP ${CMAKE_CURRENT_LIST_DIR}/stripe.hpp)
 set(MLTVRS_SHOP_IPP ${CMAKE_CURRENT_LIST_DIR}/ipp/stripe.ipp)
 set(MLTVRS_SHOP_CPP ${CMAKE_CURRENT_LIST_DIR}/src/stripe.cpp)

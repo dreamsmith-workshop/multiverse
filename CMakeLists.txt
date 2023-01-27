@@ -24,6 +24,13 @@ mltvrs_configure_project(PREFIX MLTVRS REPORT_ALL TRUE)
 
 find_package(Microsoft.GSL REQUIRED)
 
+mltvrs_add_install_dependencies(
+    PREFIX
+        MLTVRS
+    PACKAGES
+        Microsoft.GSL
+)
+
 ##################
 # Create Targets #
 ##################
@@ -132,6 +139,19 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
             mltvrs::
         DESTINATION
             ${MLTVRS_CMAKE_CONFIG_DESTINATION}
+    )
+
+    list(REMOVE_DUPLICATES MLTVRS_INSTALL_DEPENDENCIES)
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/project-depends.in.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/project-depends.cmake
+        @ONLY
+    )
+    install(
+        FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/project-depends.cmake
+        DESTINATION
+            ${MLTVRS_CMAKE_CONFIG_DESTINATION}/mltvrs
     )
     install(
         DIRECTORY
