@@ -72,7 +72,7 @@ add_library(mltvrs::mltvrs ALIAS mltvrs)
 #########################
 
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
-    add_library(mltvrs::mltvrs_test_main ALIAS Catch2::Catch2WithMain)
+    add_library(mltvrs::test_main ALIAS Catch2::Catch2WithMain)
 endif()
 
 #####################
