@@ -195,6 +195,7 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     install(
         FILES
             ${CMAKE_CURRENT_BINARY_DIR}/mltvrs.pc
+            ${CMAKE_CURRENT_BINARY_DIR}/mltvrs_shop.pc
         DESTINATION
             ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig
     )
