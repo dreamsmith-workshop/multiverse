@@ -6,7 +6,7 @@
 #include <boost/static_string.hpp>
 #include <boost/url/src.hpp>
 
-#include <mltvrs/ietf/rfc4648.hpp>
+#include <mltvrs/ietf/raw_encoding.hpp>
 #include <mltvrs/shop/stripe.hpp>
 
 #include <catch2/catch_test_macros.hpp>

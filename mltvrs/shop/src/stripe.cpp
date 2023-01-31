@@ -2,7 +2,7 @@
 
 #include <fmt/format.h>
 
-#include <mltvrs/ietf/rfc4648.hpp>
+#include <mltvrs/ietf/raw_encoding.hpp>
 #include <mltvrs/shop/stripe.hpp>
 
 namespace {
