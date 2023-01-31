@@ -178,7 +178,7 @@ function(mltvrs_configure_project)
     )        
     set(
         CMAKE_INTERPROCEDURAL_OPTIMIZATION
-            ON
+            ${CMAKE_INTERPROCEDURAL_OPTIMIZATION}
             CACHE
                 BOOL
                 "Enable link-time interproceduratl optimization"
