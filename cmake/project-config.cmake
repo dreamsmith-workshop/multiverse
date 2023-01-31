@@ -192,7 +192,6 @@ function(mltvrs_add_install_dependencies)
             "${MULTI_VALUE_ARGS}"
     )
 
-    message(STATUS "adding : ${PARSED_PACKAGES}")
     list(APPEND ${PARSED_PREFIX}_INSTALL_DEPENDENCIES ${PARSED_PACKAGES})
     set(
         ${PARSED_PREFIX}_INSTALL_DEPENDENCIES
