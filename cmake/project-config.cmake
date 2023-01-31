@@ -114,6 +114,19 @@ function(mltvrs_configure_project)
     endif()
     mltvrs_report_option(ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
 
+    # handle link-time optimization
+    if(${PARSED_PREFIX}_ENABLE_AUTO_LTO)
+        include(CheckIPOSupported)
+        check_ipo_supported(RESULT IPO_SUPPORTED)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${IPO_SUPPORTED})
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+
+        endif()
+    else()
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
+    endif()
+    mltvrs_report_option(ENABLE_AUTO_LTO)
+
     # handle exception disabling
     if(${PARSED_PREFIX}_DISABLE_EXCEPTIONS)
         if(
@@ -161,6 +174,14 @@ function(mltvrs_configure_project)
             CACHE
                 STRING
                 "Flags used by the CXX compiler during all build types."
+            FORCE
+    )        
+    set(
+        CMAKE_INTERPROCEDURAL_OPTIMIZATION
+            ON
+            CACHE
+                BOOL
+                "Enable link-time interproceduratl optimization"
             FORCE
     )
 

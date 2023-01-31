@@ -12,7 +12,7 @@ option(MLTVRS_ENABLE_WALL                          OFF)
 option(MLTVRS_ENABLE_WERROR                        OFF)
 option(MLTVRS_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS OFF)
 option(MLTVRS_ENABLE_TESTING                       OFF)
-option(MLTVRS_ENABLE_STATIC_STDLIB                 OFF)
+option(MLTVRS_ENABLE_AUTO_LTO                      OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
