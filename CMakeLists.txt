@@ -33,10 +33,12 @@ set(
     MLTVRS_HPP
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/interval.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/multiverse.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/string_literal.hpp
 )
 set(
     MLTVRS_IPP
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/interval.ipp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/string_literal.ipp
 )
 set(MLTVRS_CPP)
 
