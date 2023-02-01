@@ -19,13 +19,26 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 mltvrs_configure_project(PREFIX MLTVRS REPORT_ALL TRUE)
 
+#####################
+# Find Dependencies #
+#####################
+
+find_package(Microsoft.GSL REQUIRED)
+
 ##################
 # Create Targets #
 ##################
 
-set(MLTVRS_HPP ${CMAKE_CURRENT_LIST_DIR}/mltvrs/multiverse.hpp)
-set(MLTVRS_IPP )
-set(MLTVRS_CPP )
+set(
+    MLTVRS_HPP
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/interval.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/multiverse.hpp
+)
+set(
+    MLTVRS_IPP
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/interval.ipp
+)
+set(MLTVRS_CPP)
 
 add_library(mltvrs INTERFACE ${MLTVRS_HPP} ${MLTVRS_IPP} ${MLTVRS_CPP})
 target_include_directories(
@@ -34,6 +47,7 @@ target_include_directories(
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/mltvrs>
 )
+target_link_libraries(mltvrs INTERFACE Microsoft.GSL::GSL)
 add_library(mltvrs::mltvrs ALIAS mltvrs)
 
 #########################
