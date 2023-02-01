@@ -15,7 +15,7 @@ function(mltvrs_configure_project)
     endmacro()
 
     if(DEFINED ${PARSED_PREFIX}_STDLIB AND NOT ${PARSED_PREFIX}_STDLIB STREQUAL "default")
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=${${PARSED_PREFIX}_STDLIB}")
         else()
             message(FATAL_ERROR "${PARSED_PREFIX}_STDLIB must be \"default\" unless using Clang")
@@ -24,7 +24,7 @@ function(mltvrs_configure_project)
     mltvrs_report_option(STDLIB)
 
     if(DEFINED ${PARSED_PREFIX}_STDLIB_PATH AND EXISTS ${${PARSED_PREFIX}_STDLIB_PATH})
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             set(
                 CMAKE_EXE_LINKER_FLAGS
                     "${CMAKE_EXE_LINKER_FLAGS} -L ${${PARSED_PREFIX}_STDLIB_PATH}"
@@ -45,7 +45,7 @@ function(mltvrs_configure_project)
 
     if(DEFINED ${PARSED_PREFIX}_STDLIB_INCLUDE AND EXISTS ${${PARSED_PREFIX}_STDLIB_INCLUDE})
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${${PARSED_PREFIX}_STDLIB_INCLUDE}")
@@ -58,7 +58,7 @@ function(mltvrs_configure_project)
     mltvrs_report_option(STDLIB_INCLUDE)
 
     if(${PARSED_PREFIX}_ENABLE_STATIC_STDLIB)
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
         else()
             message(FATAL_ERROR "${PARSED_PREFIX}_ENABLE_STATIC_STDLIB must be \"OFF\" unless using Clang")
@@ -69,7 +69,7 @@ function(mltvrs_configure_project)
     # handle enable-all-warnings
     if(${PARSED_PREFIX}_ENABLE_WALL)
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
@@ -84,7 +84,7 @@ function(mltvrs_configure_project)
     # handle treat-warnings-as-errors
     if(${PARSED_PREFIX}_ENABLE_WERROR)
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
@@ -101,7 +101,7 @@ function(mltvrs_configure_project)
         if(${PARSED_PREFIX}_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts-diagnostics-depth=9")
         endif()
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         if(${PARSED_PREFIX}_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-backtrace-limit=0")
         endif()
@@ -130,7 +130,7 @@ function(mltvrs_configure_project)
     # handle exception disabling
     if(${PARSED_PREFIX}_DISABLE_EXCEPTIONS)
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
@@ -145,7 +145,7 @@ function(mltvrs_configure_project)
     # handle exception disabling
     if(${PARSED_PREFIX}_DISABLE_RTTI)
         if(
-            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
