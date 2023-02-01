@@ -4,4 +4,10 @@ HeaderFilterRegex: 'mltvrs/((.*\.hpp)|(ipp/.*\.ipp))$'
 CheckOptions:
   - key  : misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
     value: '1'
+  - key  : readability-uppercase-literal-suffix.NewSuffixes
+    value: 
+      - L
+      - LL
+      - uL
+      - uLL
 ...
