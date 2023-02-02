@@ -40,9 +40,20 @@ class mltvrs::async::task<T>::promise_type
 
         constexpr void get() const
         {
-            if(!get_if()) {
-                throw no_exception{"requesting the stored exception when this coroutine has none"};
-            }
+            return std::visit(
+                [](const auto& state) -> void
+                {
+                    using active_state = std::remove_cvref_t<decltype(state)>;
+                    if constexpr(std::same_as<active_state, std::monostate>) {
+                        throw no_result{
+                            "requesting the task result when it has yet to generate one"};
+                    } else if constexpr(std::same_as<active_state, std::exception_ptr>) {
+                        std::rethrow_exception(state);
+                    } else {
+                        return;
+                    }
+                },
+                m_state);
         }
 
         [[nodiscard]] constexpr auto& get() const
