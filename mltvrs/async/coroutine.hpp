@@ -45,7 +45,7 @@ namespace mltvrs::async {
 
     } // namespace detail
 
-    template<typename T = void, executor Executor = boost::asio::any_io_executor>
+    template<typename T = void>
     class task
     {
         public:

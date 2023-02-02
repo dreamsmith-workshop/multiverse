@@ -16,8 +16,8 @@ class mltvrs::async::detail::task_promise_base<Derived, void>
         constexpr void return_void() const noexcept {}
 };
 
-template<typename T, mltvrs::async::executor Executor>
-class mltvrs::async::task<T, Executor>::promise_type
+template<typename T>
+class mltvrs::async::task<T>::promise_type
     : public detail::task_promise_base<promise_type, value_type>
 {
     public:
@@ -55,35 +55,35 @@ class mltvrs::async::task<T, Executor>::promise_type
         state_type m_state = {};
 };
 
-template<typename T, mltvrs::async::executor Executor>
-constexpr mltvrs::async::task<T, Executor>::task(std::coroutine_handle<promise_type> coro) noexcept
+template<typename T>
+constexpr mltvrs::async::task<T>::task(std::coroutine_handle<promise_type> coro) noexcept
     : m_coroutine{std::move(coro)}
 {
 }
 
-template<typename T, mltvrs::async::executor Executor>
-auto mltvrs::async::task<T, Executor>::operator=(task&& rhs) noexcept -> task&
+template<typename T>
+auto mltvrs::async::task<T>::operator=(task&& rhs) noexcept -> task&
 {
     m_coroutine = std::exchange(rhs.m_coroutine, nullptr);
     return *this;
 }
 
-template<typename T, mltvrs::async::executor Executor>
-mltvrs::async::task<T, Executor>::~task() noexcept
+template<typename T>
+mltvrs::async::task<T>::~task() noexcept
 {
     if(m_coroutine) {
         m_coroutine.destroy();
     }
 }
 
-template<typename T, mltvrs::async::executor Executor>
-constexpr void mltvrs::async::task<T, Executor>::await_suspend(std::coroutine_handle<> coroutine)
+template<typename T>
+constexpr void mltvrs::async::task<T>::await_suspend(std::coroutine_handle<> coroutine)
 {
     m_coroutine = coroutine;
 }
 
-template<typename T, mltvrs::async::executor Executor>
-[[nodiscard]] constexpr mltvrs::async::task<T, Executor>::operator bool() const noexcept
+template<typename T>
+[[nodiscard]] constexpr mltvrs::async::task<T>::operator bool() const noexcept
 {
     return m_coroutine && !m_coroutine.done();
 }
