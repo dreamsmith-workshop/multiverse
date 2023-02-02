@@ -31,6 +31,7 @@ find_package(Microsoft.GSL REQUIRED)
 
 set(
     MLTVRS_HPP
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/chrono.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/interval.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/multiverse.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/string_literal.hpp
@@ -57,11 +58,15 @@ add_library(mltvrs::mltvrs ALIAS mltvrs)
 #########################
 
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
-    add_library(mltvrs_test_main ${CMAKE_CURRENT_LIST_DIR}/mltvrs/test/test_main.cpp)
-    target_compile_definitions(mltvrs_test_main PUBLIC CATCH_CONFIG_PREFIX_ALL)
-    target_link_libraries(mltvrs_test_main PUBLIC Catch2::Catch2)
-    add_library(mltvrs::mltvrs_test_main ALIAS mltvrs_test_main)
+    find_package(Catch2 REQUIRED)
+    add_library(mltvrs::test_main ALIAS Catch2::Catch2WithMain)
 endif()
+
+#####################
+# Add Sub-Libraries #
+#####################
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mltvrs/async)
 
 ################
 # Installation #
