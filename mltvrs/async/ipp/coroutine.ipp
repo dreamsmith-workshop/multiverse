@@ -122,6 +122,26 @@ mltvrs::async::sleep<Clock, WaitTraits, Executor>::sleep(time_point expiry, exec
 }
 
 template<mltvrs::chrono::clock Clock, typename WaitTraits, mltvrs::async::executor Executor>
+mltvrs::async::sleep<Clock, WaitTraits, Executor>::sleep(timer_type&& preset_timer)
+    : m_timer{std::make_unique<timer_type>(std::move(preset_timer))}
+{
+}
+
+template<mltvrs::chrono::clock Clock, typename WaitTraits, mltvrs::async::executor Executor>
+mltvrs::async::sleep<Clock, WaitTraits, Executor>::sleep(timer_type&& timer, duration expiry)
+    : m_timer{std::make_unique<timer_type>(std::move(timer))}
+{
+    m_timer->expires_after(expiry);
+}
+
+template<mltvrs::chrono::clock Clock, typename WaitTraits, mltvrs::async::executor Executor>
+mltvrs::async::sleep<Clock, WaitTraits, Executor>::sleep(timer_type&& timer, time_point expiry)
+    : m_timer{std::make_unique<timer_type>(std::move(timer))}
+{
+    m_timer->expires_at(expiry);
+}
+
+template<mltvrs::chrono::clock Clock, typename WaitTraits, mltvrs::async::executor Executor>
 void mltvrs::async::sleep<Clock, WaitTraits, Executor>::await_suspend(
     std::coroutine_handle<> coroutine)
 {

@@ -151,7 +151,7 @@ namespace mltvrs::async {
             class promise_type; //!< The coroutine promise type.
 
             /**
-             * @name Constructors
+             * @name Construct with New Timer
              *
              * @brief Suspend coroutine execution for the given duration or until the given time.
              *
@@ -169,6 +169,22 @@ namespace mltvrs::async {
                 requires(detail::is_system_executor_v<executor_type>);
             sleep(duration expiry, executor_type exec);
             sleep(time_point expiry, executor_type exec);
+            //! @}
+
+            /**
+             * @name Construct with Existing Timer
+             *
+             * @brief Suspend coroutine execution until the given timer expires.
+             *
+             * @param preset_timer A timer that is already set for future expiration.
+             * @param timer        A timer to set with the given expiration time.
+             * @param expiry       The expiration time to set the given timer with.
+             *
+             * @{
+             */
+            explicit sleep(timer_type&& preset_timer);
+            sleep(timer_type&& timer, duration expiry);
+            sleep(timer_type&& timer, time_point expiry);
             //! @}
 
             /**
