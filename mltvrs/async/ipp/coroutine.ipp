@@ -55,6 +55,13 @@ class mltvrs::async::task<T>::promise_type
         state_type m_state = {};
 };
 
+template<mltvrs::chrono::clock Clock, typename WaitTraits, mltvrs::async::executor Executor>
+class mltvrs::async::sleep<Clock, WaitTraits, Executor>::promise_type
+{
+    public:
+        constexpr void return_void() const noexcept {}
+};
+
 template<typename T>
 constexpr mltvrs::async::task<T>::task(std::coroutine_handle<promise_type> coro) noexcept
     : m_coroutine{std::move(coro)}

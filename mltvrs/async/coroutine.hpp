@@ -94,11 +94,7 @@ namespace mltvrs::async {
 
             using timer_type = boost::asio::basic_waitable_timer<clock, traits_type, executor_type>;
 
-            class promise_type
-            {
-                public:
-                    constexpr void return_void() const noexcept {}
-            };
+            class promise_type;
 
             explicit sleep(duration expiry)
                 requires(detail::is_system_executor_v<executor_type>);
