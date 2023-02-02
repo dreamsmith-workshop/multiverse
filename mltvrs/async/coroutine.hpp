@@ -15,7 +15,7 @@ namespace mltvrs::async {
 
     template<typename T>
     concept executor =
-        boost::asio::is_executor<T>::value || std::same_as<T, boost::asio::any_io_executor>;
+        boost::asio::is_executor<T>::value || boost::asio::execution::is_executor_v<T>;
 
     template<typename T>
     concept execution_context = std::derived_from<T, boost::asio::execution_context>
