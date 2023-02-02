@@ -121,7 +121,7 @@ namespace mltvrs::async {
     template<typename... D, executor Executor>
     sleep(std::chrono::duration<D...>, const Executor&) -> sleep<
         std::chrono::system_clock,
-        boost::asio::wait_traits<std::chrono::system_clock>,
+        typename boost::asio::basic_waitable_timer<std::chrono::system_clock>::traits_type,
         Executor>;
 
     template<typename Clock, typename... T>
@@ -129,7 +129,7 @@ namespace mltvrs::async {
 
     template<typename Clock, typename... T, executor Executor>
     sleep(std::chrono::time_point<Clock, T...>, const Executor&)
-        -> sleep<Clock, boost::asio::wait_traits<Clock>, Executor>;
+        -> sleep<Clock, typename boost::asio::basic_waitable_timer<Clock>::traits_type, Executor>;
 
 } // namespace mltvrs::async
 
