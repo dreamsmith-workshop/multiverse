@@ -45,6 +45,9 @@ namespace mltvrs::async {
 
     namespace detail {
 
+        inline constexpr auto noop = [](auto&&...) {};
+        using noop_t               = std::remove_cvref_t<decltype(noop)>;
+
         template<typename T>
         struct is_system_executor : public std::false_type
         {
@@ -129,13 +132,14 @@ namespace mltvrs::async {
      * @tparam Executor   The executor to resume execution on once the requisite time has elapsed.
      */
     template<
-        chrono::clock Clock = std::chrono::system_clock,
+        typename Clock      = std::chrono::system_clock,
         typename WaitTraits = typename boost::asio::basic_waitable_timer<Clock>::traits_type,
         executor Executor   = boost::asio::system_executor>
+        requires(chrono::clock<std::remove_cvref_t<Clock>>)
     class sleep
     {
         public:
-            using clock      = Clock;                      //!< The clock to time the suspension on.
+            using clock      = std::remove_cvref_t<Clock>; //!< The clock to time the suspension on.
             using time_point = typename clock::time_point; //!< The point-in-time type.
             using duration   = typename clock::duration;   //!< The duration type.
             using rep        = typename clock::rep;        //!< The duration numeric type.
@@ -164,11 +168,15 @@ namespace mltvrs::async {
              * @{
              */
             explicit sleep(duration expiry)
-                requires(detail::is_system_executor_v<executor_type>);
+                requires(detail::is_system_executor_v<executor_type> && !std::is_reference_v<Clock>)
+            ;
             explicit sleep(time_point expiry)
-                requires(detail::is_system_executor_v<executor_type>);
-            sleep(duration expiry, executor_type exec);
-            sleep(time_point expiry, executor_type exec);
+                requires(detail::is_system_executor_v<executor_type> && !std::is_reference_v<Clock>)
+            ;
+            sleep(duration expiry, executor_type exec)
+                requires(!std::is_reference_v<Clock>);
+            sleep(time_point expiry, executor_type exec)
+                requires(!std::is_reference_v<Clock>);
             //! @}
 
             /**
@@ -182,9 +190,18 @@ namespace mltvrs::async {
              *
              * @{
              */
-            explicit sleep(timer_type&& preset_timer);
-            sleep(timer_type&& timer, duration expiry);
-            sleep(timer_type&& timer, time_point expiry);
+            explicit sleep(timer_type& preset_timer)
+                requires(std::is_reference_v<Clock>);
+            explicit sleep(timer_type&& preset_timer)
+                requires(!std::is_reference_v<Clock>);
+            sleep(timer_type& timer, duration expiry)
+                requires(std::is_reference_v<Clock>);
+            sleep(timer_type&& timer, duration expiry)
+                requires(!std::is_reference_v<Clock>);
+            sleep(timer_type& timer, time_point expiry)
+                requires(std::is_reference_v<Clock>);
+            sleep(timer_type&& timer, time_point expiry)
+                requires(!std::is_reference_v<Clock>);
             //! @}
 
             /**
@@ -203,7 +220,12 @@ namespace mltvrs::async {
             //! @}
 
         private:
-            std::unique_ptr<timer_type> m_timer;
+            using timer_storage_type = std::conditional_t<
+                std::is_reference_v<Clock>,
+                std::unique_ptr<timer_type, detail::noop_t>,
+                std::unique_ptr<timer_type>>;
+
+            timer_storage_type m_timer;
     };
 
     //! Assume resumption on the system executor after the given duration.
@@ -222,6 +244,12 @@ namespace mltvrs::async {
     template<typename Clock, typename... T, executor Executor>
     sleep(std::chrono::time_point<Clock, T...>, const Executor&)
         -> sleep<Clock, typename boost::asio::basic_waitable_timer<Clock>::traits_type, Executor>;
+    //! Use the given existing timer instead of creating a new one.
+    template<typename Clock, typename... T, typename... A>
+    sleep(boost::asio::basic_waitable_timer<Clock, T...>&, A&&...) -> sleep<
+        Clock&,
+        typename boost::asio::basic_waitable_timer<Clock, T...>::traits_type,
+        typename boost::asio::basic_waitable_timer<Clock, T...>::executor_type>;
 
 } // namespace mltvrs::async
 
