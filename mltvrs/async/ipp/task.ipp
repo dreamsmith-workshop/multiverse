@@ -33,6 +33,35 @@ class mltvrs::async::task<T>::promise_type
             m_state = std::exception_ptr{std::current_exception()};
         }
 
+        [[nodiscard]] constexpr bool ready() const noexcept
+        {
+            return std::holds_alternative<value_storage_type>(m_state);
+        }
+
+        constexpr void get() const { std::get<value_storage_type>(m_state); }
+
+        [[nodiscard]] constexpr auto& get() const
+            requires(!std::is_void_v<value_type>)
+        {
+            const auto& retval = std::get<value_storage_type>(m_state);
+            if constexpr(std::is_reference_v<value_type>) {
+                return *retval;
+            } else {
+                return retval;
+            }
+        }
+
+        [[nodiscard]] constexpr auto& get()
+            requires(!std::is_void_v<value_type>)
+        {
+            auto& retval = std::get<value_storage_type>(m_state);
+            if constexpr(std::is_reference_v<value_type>) {
+                return *retval;
+            } else {
+                return retval;
+            }
+        }
+
     private:
         using value_storage_type = std::conditional_t<
             std::is_void_v<value_type>,
@@ -86,4 +115,31 @@ template<typename T>
 [[nodiscard]] constexpr mltvrs::async::task<T>::operator bool() const noexcept
 {
     return m_coroutine && !m_coroutine.done();
+}
+
+template<typename T>
+[[nodiscard]] constexpr bool mltvrs::async::task<T>::ready() const noexcept
+{
+    return m_coroutine.promise().ready();
+}
+
+template<typename T>
+constexpr void mltvrs::async::task<T>::get() const
+    requires(std::is_void_v<value_type>)
+{
+    m_coroutine.promise().get();
+}
+
+template<typename T>
+[[nodiscard]] constexpr auto mltvrs::async::task<T>::get() const -> const value_type&
+    requires(!std::is_void_v<value_type>)
+{
+    return m_coroutine.promise().get();
+}
+
+template<typename T>
+[[nodiscard]] constexpr auto mltvrs::async::task<T>::get() -> value_type&
+    requires(!std::is_void_v<value_type>)
+{
+    return m_coroutine.promise().get();
 }

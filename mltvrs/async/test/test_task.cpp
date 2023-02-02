@@ -6,10 +6,19 @@ CATCH_SCENARIO("synchronously waiting on a task produces the correct result")
 {
     CATCH_GIVEN("a task that performs a calculation without yielding in the middle")
     {
+        const auto task_coro = [](int arg) -> mltvrs::async::task<int> { co_return arg; };
+
         CATCH_WHEN("that task is executed once")
         {
+            const auto data = GENERATE(take(5, random(-100, 100)));
+
+            auto task = task_coro(data);
+
             CATCH_THEN("that task becomes ready, and returns the correct value")
             {
+                CATCH_REQUIRE(!task);
+                CATCH_REQUIRE(task.ready());
+                CATCH_REQUIRE(task.get() == data);
             }
         }
     }

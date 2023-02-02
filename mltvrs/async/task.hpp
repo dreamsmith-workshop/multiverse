@@ -62,6 +62,14 @@ namespace mltvrs::async {
             //! @return Returns `true` if resumable, or `false` otherwise.
             [[nodiscard]] explicit constexpr operator bool() const noexcept;
 
+            [[nodiscard]] constexpr bool ready() const noexcept;
+            constexpr void               get() const
+                requires(std::is_void_v<value_type>);
+            [[nodiscard]] constexpr auto get() const -> const value_type&
+                requires(!std::is_void_v<value_type>);
+            [[nodiscard]] constexpr auto get() -> value_type&
+                requires(!std::is_void_v<value_type>);
+
         private:
             std::coroutine_handle<promise_type> m_coroutine = nullptr;
     };
