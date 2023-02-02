@@ -5,8 +5,8 @@ from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout
 class MultiverseConan(ConanFile):
     name = "multiverse"
     version = "0.0.1"
-    requires = "boost/1.81.0", "fmt/5.3.0", "catch2/2.13.9", "ms-gsl/4.0.0"
-    generators = "cmake_find_package_multi"
+    requires = "boost/1.81.0", "fmt/5.3.0", "ms-gsl/4.0.0"
+    generators = "CMakeDeps"
 
     # Optional metadata
     license = "MIT"
@@ -38,6 +38,7 @@ class MultiverseConan(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
+        tc.cache_variables["CMAKE_CXX_STANDARD"] = 20
         tc.generate()
 
     def build(self):
