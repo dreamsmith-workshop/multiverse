@@ -113,6 +113,20 @@ class mltvrs::async::task<T>::promise_type
             return nullptr;
         }
 
+        [[nodiscard]] constexpr bool has_exception() const noexcept
+        {
+            return std::holds_alternative<std::exception_ptr>(m_state);
+        }
+
+        [[nodiscard]] auto get_exception() const noexcept -> std::exception_ptr
+        {
+            if(const auto* const retval = std::get_if<std::exception_ptr>(m_state)) {
+                return *retval;
+            }
+
+            return nullptr;
+        }
+
     private:
         using value_storage_type = std::conditional_t<
             std::is_void_v<value_type>,
@@ -205,4 +219,16 @@ template<typename T>
 [[nodiscard]] constexpr auto mltvrs::async::task<T>::get_if() -> value_type*
 {
     return m_coroutine.promise().get_if();
+}
+
+template<typename T>
+[[nodiscard]] constexpr bool mltvrs::async::task<T>::has_exception() const noexcept
+{
+    return m_coroutine.promise().has_exception();
+}
+
+template<typename T>
+[[nodiscard]] auto mltvrs::async::task<T>::get_exception() const noexcept -> std::exception_ptr
+{
+    return m_coroutine.promise().get_exception();
 }

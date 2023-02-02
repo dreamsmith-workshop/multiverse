@@ -101,6 +101,23 @@ namespace mltvrs::async {
             [[nodiscard]] constexpr auto get_if() -> value_type*;
             //! @}
 
+            /**
+             * @name Exceptions
+             *
+             * @brief Check for, and retrieve, exceptions thrown by the coroutine.
+             *
+             * When `task::has_exception` returns `true`, the task has stored an exception that has
+             * escaped its coroutine's body, and `task::get_exception` will retrieve the stored
+             * exception. If no exception is stored, `task::get_exception` returns a nulled value.
+             *
+             * @return Returns the requested exception information.
+             *
+             * @{
+             */
+            [[nodiscard]] constexpr bool has_exception() const noexcept;
+            [[nodiscard]] auto           get_exception() const noexcept -> std::exception_ptr;
+            //! @}
+
         private:
             std::coroutine_handle<promise_type> m_coroutine = nullptr;
     };
