@@ -16,11 +16,7 @@ function(mltvrs_configure_project)
 
     if(DEFINED ${PARSED_PREFIX}_STDLIB AND NOT ${PARSED_PREFIX}_STDLIB STREQUAL "default")
         if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -stdlib=${${PARSED_PREFIX}_STDLIB}"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=${${PARSED_PREFIX}_STDLIB}")
         else()
             message(FATAL_ERROR "${PARSED_PREFIX}_STDLIB must be \"default\" unless using Clang")
         endif()
@@ -32,19 +28,13 @@ function(mltvrs_configure_project)
             set(
                 CMAKE_EXE_LINKER_FLAGS
                     "${CMAKE_EXE_LINKER_FLAGS} -L ${${PARSED_PREFIX}_STDLIB_PATH}"
-                    PARENT_SCOPE
             )
             set(
                 CMAKE_EXE_LINKER_FLAGS
                     "${CMAKE_EXE_LINKER_FLAGS} -rpath ${${PARSED_PREFIX}_STDLIB_PATH}"
-                    PARENT_SCOPE
             )
         elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -Wl,-rpath -Wl,${${PARSED_PREFIX}_STDLIB_PATH}"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath -Wl,${${PARSED_PREFIX}_STDLIB_PATH}")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_STDLIB_PATH")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -58,11 +48,7 @@ function(mltvrs_configure_project)
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -isystem ${${PARSED_PREFIX}_STDLIB_INCLUDE}"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${${PARSED_PREFIX}_STDLIB_INCLUDE}")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_STDLIB_INCLUDE")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -73,11 +59,7 @@ function(mltvrs_configure_project)
 
     if(${PARSED_PREFIX}_ENABLE_STATIC_STDLIB)
         if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -static"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
         else()
             message(FATAL_ERROR "${PARSED_PREFIX}_ENABLE_STATIC_STDLIB must be \"OFF\" unless using Clang")
         endif()
@@ -90,11 +72,7 @@ function(mltvrs_configure_project)
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -Wall -Wextra"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_ENABLE_WALL")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -109,11 +87,7 @@ function(mltvrs_configure_project)
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -Werror"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_ENABLE_WERROR")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -125,19 +99,11 @@ function(mltvrs_configure_project)
     # handle detailed-concepts-diagnostics
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         if(${PARSED_PREFIX}_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -fconcepts-diagnostics-depth=9"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts-diagnostics-depth=9")
         endif()
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         if(${PARSED_PREFIX}_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -ftemplate-backtrace-limit=0"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-backtrace-limit=0")
         endif()
     else()
         if(${PARSED_PREFIX}_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
@@ -148,17 +114,26 @@ function(mltvrs_configure_project)
     endif()
     mltvrs_report_option(ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS)
 
+    # handle link-time optimization
+    if(${PARSED_PREFIX}_ENABLE_AUTO_LTO)
+        include(CheckIPOSupported)
+        check_ipo_supported(RESULT IPO_SUPPORTED)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${IPO_SUPPORTED})
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+
+        endif()
+    else()
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
+    endif()
+    mltvrs_report_option(ENABLE_AUTO_LTO)
+
     # handle exception disabling
     if(${PARSED_PREFIX}_DISABLE_EXCEPTIONS)
         if(
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -fno-exceptions"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_DISABLE_EXCEPTIONS")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -173,11 +148,7 @@ function(mltvrs_configure_project)
             CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         )
-            set(
-                CMAKE_CXX_FLAGS
-                    "${CMAKE_CXX_FLAGS} -fno-rtti"
-                    PARENT_SCOPE
-            )
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
         else()
             message(SEND_ERROR  "option  : ${PARSED_PREFIX}_DISABLE_RTTI")
             message(SEND_ERROR  "compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -186,30 +157,7 @@ function(mltvrs_configure_project)
     endif()
     mltvrs_report_option(DISABLE_RTTI)
 
-    # handle Conan integration
-    if(${PARSED_PREFIX}_ENABLE_CONAN_OVERRIDE)
-        if(NOT EXISTS ${CMAKE_SOURCE_DIR}/conan)
-            file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/conan)
-        endif()
-        execute_process(
-            COMMAND
-                conan install ../ --build missing -s build_type=${CMAKE_BUILD_TYPE}
-            WORKING_DIRECTORY 
-                ${CMAKE_SOURCE_DIR}/conan
-            COMMAND_ERROR_IS_FATAL
-                ANY
-        )
-    endif()
-    if(EXISTS ${CMAKE_SOURCE_DIR}/conan/conan.lock)
-        list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/generators)
-    endif()
-    mltvrs_report_option(ENABLE_CONAN_OVERRIDE)
-
     # handle testing
-    if(ENABLE_TESTING AND ${PARSED_PREFIX}_ENABLE_TESTING)
-        include(CTest)
-        find_package(Catch2 3 REQUIRED)
-    endif()
     mltvrs_report_option(ENABLE_TESTING)
 
     set(
@@ -227,13 +175,13 @@ function(mltvrs_configure_project)
                 STRING
                 "Flags used by the CXX compiler during all build types."
             FORCE
-    )
+    )        
     set(
-        CMAKE_PREFIX_PATH
-            "${CMAKE_PREFIX_PATH}"
+        CMAKE_INTERPROCEDURAL_OPTIMIZATION
+            ${CMAKE_INTERPROCEDURAL_OPTIMIZATION}
             CACHE
-                PATH
-                "Additional paths to look for packages in."
+                BOOL
+                "Enable link-time interproceduratl optimization"
             FORCE
     )
 
@@ -250,4 +198,27 @@ function(mltvrs_configure_project)
         string(REPEAT " " ${PADDING_LENGTH} PADDING)
         message(STATUS "${OPTION_NAME}${PADDING} : ${${OPTION_NAME}}")
     endforeach()
+endfunction()
+
+function(mltvrs_add_install_dependencies)
+    set(OPTIONS          )
+    set(ONE_VALUE_ARGS   PREFIX)
+    set(MULTI_VALUE_ARGS PACKAGES)
+    cmake_parse_arguments(
+        PARSE_ARGV
+            0
+        PARSED
+            "${OPTIONS}"
+            "${ONE_VALUE_ARGS}"
+            "${MULTI_VALUE_ARGS}"
+    )
+
+    list(APPEND ${PARSED_PREFIX}_INSTALL_DEPENDENCIES ${PARSED_PACKAGES})
+    set(
+        ${PARSED_PREFIX}_INSTALL_DEPENDENCIES
+            ${${PARSED_PREFIX}_INSTALL_DEPENDENCIES}
+            CACHE
+                INTERNAL
+                "dependencies required to consume this library"
+    )
 endfunction()

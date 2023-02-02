@@ -1,0 +1,4 @@
+
+foreach(PACAKGE_NAME @MLTVRS_INSTALL_DEPENDENCIES@)
+    find_package(${PACAKGE_NAME} REQUIRED)
+endforeach()
