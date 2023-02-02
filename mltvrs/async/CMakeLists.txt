@@ -11,9 +11,19 @@ mltvrs_add_install_dependencies(
         Boost
 )
 
-set(MLTVRS_ASYNC_HPP ${CMAKE_CURRENT_LIST_DIR}/coroutine.hpp)
-set(MLTVRS_ASYNC_IPP ${CMAKE_CURRENT_LIST_DIR}/ipp/coroutine.ipp)
-set(MLTVRS_ASYNC_CPP)
+set(
+    MLTVRS_ASYNC_HPP
+        ${CMAKE_CURRENT_LIST_DIR}/coroutine.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/task.hpp
+)
+set(
+    MLTVRS_ASYNC_IPP
+        ${CMAKE_CURRENT_LIST_DIR}/ipp/coroutine.ipp
+        ${CMAKE_CURRENT_LIST_DIR}/ipp/task.ipp
+)
+set(
+    MLTVRS_ASYNC_CPP
+)
 
 add_library(mltvrs_async INTERFACE ${MLTVRS_ASYNC_HPP} ${MLTVRS_ASYNC_IPP} ${MLTVRS_ASYNC_CPP})
 target_sources(

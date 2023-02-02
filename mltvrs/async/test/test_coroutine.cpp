@@ -3,6 +3,7 @@
 #include <boost/asio/thread_pool.hpp>
 
 #include <mltvrs/async/coroutine.hpp>
+#include <mltvrs/async/task.hpp>
 
 #include <catch2/catch_all.hpp>
 
