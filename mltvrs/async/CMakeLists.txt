@@ -46,4 +46,8 @@ if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
     add_executable(mltvrs_test_coroutine ${CMAKE_CURRENT_LIST_DIR}/test/test_coroutine.cpp)
     target_link_libraries(mltvrs_test_coroutine PRIVATE mltvrs::async mltvrs::test_main)
     add_test(NAME mltvrs_test_coroutine COMMAND mltvrs_test_coroutine)
+    
+    add_executable(mltvrs_test_task ${CMAKE_CURRENT_LIST_DIR}/test/test_task.cpp)
+    target_link_libraries(mltvrs_test_task PRIVATE mltvrs::async mltvrs::test_main)
+    add_test(NAME mltvrs_test_task COMMAND mltvrs_test_task)
 endif()
