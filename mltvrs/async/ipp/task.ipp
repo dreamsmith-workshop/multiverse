@@ -38,28 +38,79 @@ class mltvrs::async::task<T>::promise_type
             return std::holds_alternative<value_storage_type>(m_state);
         }
 
-        constexpr void get() const { std::get<value_storage_type>(m_state); }
+        constexpr void get() const
+        {
+            if(!get_if()) {
+                throw no_exception{"requesting the stored exception when this coroutine has none"};
+            }
+        }
 
         [[nodiscard]] constexpr auto& get() const
             requires(!std::is_void_v<value_type>)
         {
-            const auto& retval = std::get<value_storage_type>(m_state);
-            if constexpr(std::is_reference_v<value_type>) {
-                return *retval;
-            } else {
-                return retval;
-            }
+            return std::visit(
+                [](const auto& state) -> const value_type&
+                {
+                    using active_state = std::remove_cvref_t<decltype(state)>;
+                    if constexpr(std::same_as<active_state, std::monostate>) {
+                        throw no_result{
+                            "requesting the task result when it has yet to generate one"};
+                    } else if constexpr(std::same_as<active_state, std::exception_ptr>) {
+                        std::rethrow_exception(state);
+                    } else {
+                        return state;
+                    }
+                },
+                m_state);
         }
 
         [[nodiscard]] constexpr auto& get()
             requires(!std::is_void_v<value_type>)
         {
-            auto& retval = std::get<value_storage_type>(m_state);
-            if constexpr(std::is_reference_v<value_type>) {
-                return *retval;
-            } else {
-                return retval;
+            return std::visit(
+                [](auto& state) -> value_type&
+                {
+                    using active_state = std::remove_cvref_t<decltype(state)>;
+                    if constexpr(std::same_as<active_state, std::monostate>) {
+                        throw no_result{
+                            "requesting the task result when it has yet to generate one"};
+                    } else if constexpr(std::same_as<active_state, std::exception_ptr>) {
+                        std::rethrow_exception(state);
+                    } else {
+                        return state;
+                    }
+                },
+                m_state);
+        }
+
+        [[nodiscard]] constexpr auto get_if() const -> const std::remove_reference_t<value_type>*
+        {
+            if(const auto* const retval = std::get_if<value_storage_type>(m_state)) {
+                if constexpr(std::is_void_v<value_type>) {
+                    return this;
+                } else if constexpr(std::is_reference_v<value_type>) {
+                    return *retval;
+                } else {
+                    return retval;
+                }
             }
+
+            return nullptr;
+        }
+
+        [[nodiscard]] constexpr auto get_if() -> std::remove_reference_t<value_type>*
+        {
+            if(auto* const retval = std::get_if<value_storage_type>(m_state)) {
+                if constexpr(std::is_void_v<value_type>) {
+                    return this;
+                } else if constexpr(std::is_reference_v<value_type>) {
+                    return *retval;
+                } else {
+                    return retval;
+                }
+            }
+
+            return nullptr;
         }
 
     private:
@@ -142,4 +193,16 @@ template<typename T>
     requires(!std::is_void_v<value_type>)
 {
     return m_coroutine.promise().get();
+}
+
+template<typename T>
+[[nodiscard]] constexpr auto mltvrs::async::task<T>::get_if() const -> const value_type*
+{
+    return m_coroutine.promise().get_if();
+}
+
+template<typename T>
+[[nodiscard]] constexpr auto mltvrs::async::task<T>::get_if() -> value_type*
+{
+    return m_coroutine.promise().get_if();
 }

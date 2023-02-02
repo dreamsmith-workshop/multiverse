@@ -12,6 +12,15 @@ namespace mltvrs::async {
     } // namespace detail
 
     /**
+     * @brief An exception indicating that the requested coroutine result is not available.
+     */
+    class no_result : public std::runtime_error
+    {
+        public:
+            using std::runtime_error::runtime_error;
+    };
+
+    /**
      * @brief A task coroutine with the given return type.
      *
      * @tparam T The type of result this task generates.
@@ -62,6 +71,25 @@ namespace mltvrs::async {
             //! @return Returns `true` if resumable, or `false` otherwise.
             [[nodiscard]] explicit constexpr operator bool() const noexcept;
 
+            /**
+             * @name Result
+             *
+             * @brief Check for, and obtain, the coroutine result.
+             *
+             * When `task::ready` returns `true`, the task has completed generating its result, and
+             * `task::get` will return the generated result. When `task::ready` returns `false`,
+             * then the task either has not run to completion, or has encountered an exception.
+             * Callers can distinguish between these two states via `task::has_exception`.
+             * `task::get_if` combines the presence check and result retrieval in one operation - it
+             * returns a pointer to the result if it exists, and `nullptr` otherwise.
+             *
+             * If `task::get` is called when `task::has_exception` is `true`, the stored exception
+             * will be thrown and propagated to the caller.
+             *
+             * @return Returns the requested result information.
+             *
+             * @throw async::no_result Attempting to retrieve a value the task yet to generated.
+             */
             [[nodiscard]] constexpr bool ready() const noexcept;
             constexpr void               get() const
                 requires(std::is_void_v<value_type>);
@@ -69,6 +97,9 @@ namespace mltvrs::async {
                 requires(!std::is_void_v<value_type>);
             [[nodiscard]] constexpr auto get() -> value_type&
                 requires(!std::is_void_v<value_type>);
+            [[nodiscard]] constexpr auto get_if() const -> const value_type*;
+            [[nodiscard]] constexpr auto get_if() -> value_type*;
+            //! @}
 
         private:
             std::coroutine_handle<promise_type> m_coroutine = nullptr;
