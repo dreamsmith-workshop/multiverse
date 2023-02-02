@@ -4,7 +4,6 @@
 #include <ranges>
 #include <variant>
 
-#include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/basic_waitable_timer.hpp>
 #include <boost/asio/execution_context.hpp>
 #include <boost/asio/is_executor.hpp>
