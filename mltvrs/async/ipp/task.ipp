@@ -169,7 +169,15 @@ constexpr mltvrs::async::task<T>::task(std::coroutine_handle<promise_type> coro)
 template<typename T>
 auto mltvrs::async::task<T>::operator=(task&& rhs) noexcept -> task&
 {
+    if(this == std::addressof(rhs)) {
+        return *this;
+    }
+    if(m_coroutine) {
+        m_coroutine.destroy();
+    }
+
     m_coroutine = std::exchange(rhs.m_coroutine, nullptr);
+
     return *this;
 }
 
