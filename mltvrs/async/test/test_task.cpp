@@ -15,6 +15,7 @@ CATCH_SCENARIO("synchronously waiting on a task produces the correct result")
             const auto data = GENERATE(take(5, random(-100, 100)));
 
             auto task = task_coro(data);
+            task();
 
             CATCH_THEN("that task becomes ready, and returns the correct value")
             {
@@ -42,6 +43,7 @@ CATCH_SCENARIO("synchronously waiting on a task produces the correct result")
             const auto data = GENERATE(take(5, random(-100, 100)));
 
             auto task = task_coro(data);
+            task();
 
             CATCH_THEN("that task does not become ready")
             {

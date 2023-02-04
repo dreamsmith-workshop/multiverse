@@ -26,7 +26,7 @@ class mltvrs::async::task<T>::promise_type
             return task{std::coroutine_handle<promise_type>::from_promise(*this)};
         }
 
-        constexpr auto initial_suspend() const { return std::suspend_never{}; }
+        constexpr auto initial_suspend() const { return std::suspend_always{}; }
         constexpr auto final_suspend() const noexcept { return std::suspend_always{}; }
         constexpr void unhandled_exception()
         {
