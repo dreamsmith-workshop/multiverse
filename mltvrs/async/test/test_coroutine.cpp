@@ -37,6 +37,7 @@ CATCH_SCENARIO("putting a coroutine to sleep causes it to suspend for the desire
         {
             const auto start = clock::now();
             auto       coro  = coro_def(start);
+            coro();
             std::this_thread::sleep_for((itrs + 1) * itr_dur);
 
             const auto expected_elapsed = [&]
