@@ -4,7 +4,7 @@
 
 CATCH_SCENARIO("iterating over a generator produces the correct results")
 {
-    CATCH_GIVEN("a generator that generates some series without yielding in the middle")
+    CATCH_GIVEN("a generator that generates some series")
     {
         namespace ranges = std::ranges;
         namespace views  = ranges::views;

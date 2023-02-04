@@ -1,7 +1,9 @@
 #pragma once
 
 #include <coroutine>
+#include <memory>
 #include <ranges>
+#include <stack>
 
 namespace mltvrs::async {
 
@@ -21,20 +23,20 @@ namespace mltvrs::async {
             class promise_type;
 
             generator(const generator&) = delete;
-            constexpr generator(generator&& other) noexcept;
+            generator(generator&& other) noexcept;
 
-            auto           operator=(const generator& other) -> generator& = delete;
-            constexpr auto operator=(generator&& other) noexcept -> generator&;
+            auto operator=(generator other) noexcept -> generator&;
 
             ~generator() noexcept;
 
-            [[nodiscard]] constexpr auto begin() -> iterator;
-            [[nodiscard]] constexpr auto end() const noexcept { return std::default_sentinel_t{}; }
+            [[nodiscard]] auto begin() -> iterator;
+            [[nodiscard]] auto end() const noexcept { return std::default_sentinel_t{}; }
 
         private:
-            explicit constexpr generator(std::coroutine_handle<promise_type> coroutine) noexcept;
+            explicit generator(std::coroutine_handle<promise_type> coroutine) noexcept;
 
-            std::coroutine_handle<promise_type> m_coroutine = nullptr;
+            std::coroutine_handle<promise_type>                  m_coroutine = nullptr;
+            std::unique_ptr<std::stack<std::coroutine_handle<>>> m_active;
     };
 
 } // namespace mltvrs::async

@@ -9,32 +9,29 @@ class mltvrs::async::generator<Ref, V>::iterator
         using value_type      = value;
         using difference_type = std::ptrdiff_t;
 
-        constexpr iterator(iterator&& other) noexcept
-            : m_coroutine{std::exchange(other.m_coroutine, {})}
-        {
-        }
+        iterator(iterator&& other) noexcept : m_coroutine{std::exchange(other.m_coroutine, {})} {}
 
-        constexpr auto operator=(iterator&& other) noexcept -> iterator&
+        auto operator=(iterator&& other) noexcept -> iterator&
         {
             m_coroutine = std::exchange(other.m_coroutine, {});
             return *this;
         }
 
-        [[nodiscard]] constexpr auto operator*() const
+        [[nodiscard]] auto operator*() const
             noexcept(std::is_nothrow_copy_constructible_v<reference>) -> reference
         {
             return static_cast<reference>(*(m_coroutine.promise().m_value));
         }
 
-        constexpr auto operator++() -> iterator&
+        auto operator++() -> iterator&
         {
             m_coroutine.resume();
             return *this;
         }
 
-        constexpr void operator++(int) { ++(*this); }
+        void operator++(int) { ++(*this); }
 
-        [[nodiscard]] friend constexpr bool
+        [[nodiscard]] friend bool
         operator==(const iterator& itr, std::default_sentinel_t /* unused */)
         {
             return itr.m_coroutine.done();
@@ -43,7 +40,7 @@ class mltvrs::async::generator<Ref, V>::iterator
     private:
         friend class generator;
 
-        explicit constexpr iterator(std::coroutine_handle<promise_type> coroutine) noexcept
+        explicit iterator(std::coroutine_handle<promise_type> coroutine) noexcept
             : m_coroutine{coroutine}
         {
         }
@@ -55,22 +52,22 @@ template<typename Ref, typename V>
 class mltvrs::async::generator<Ref, V>::promise_type
 {
     public:
-        [[nodiscard]] constexpr auto get_return_object() noexcept
+        [[nodiscard]] auto get_return_object() noexcept
         {
             return generator{std::coroutine_handle<promise_type>::from_promise(*this)};
         }
 
-        constexpr auto initial_suspend() const noexcept { return std::suspend_always{}; }
-        constexpr auto final_suspend() noexcept { return std::suspend_always{}; }
+        auto initial_suspend() const noexcept { return std::suspend_always{}; }
+        auto final_suspend() noexcept { return std::suspend_always{}; }
 
-        constexpr auto yield_value(yielded val) noexcept
+        auto yield_value(yielded val) noexcept
         {
             m_value = std::addressof(val);
             return std::suspend_always{};
         }
 
-        constexpr void return_void() const noexcept {}
-        constexpr void unhandled_exception() noexcept { m_except = std::current_exception(); }
+        void return_void() const noexcept {}
+        void unhandled_exception() noexcept { m_except = std::current_exception(); }
 
     private:
         friend class iterator;
@@ -80,29 +77,22 @@ class mltvrs::async::generator<Ref, V>::promise_type
 };
 
 template<typename Ref, typename V>
-constexpr mltvrs::async::generator<Ref, V>::generator(
-    std::coroutine_handle<promise_type> coroutine) noexcept
+mltvrs::async::generator<Ref, V>::generator(std::coroutine_handle<promise_type> coroutine) noexcept
     : m_coroutine{coroutine}
 {
 }
 
 template<typename Ref, typename V>
-constexpr mltvrs::async::generator<Ref, V>::generator(generator&& other) noexcept
+mltvrs::async::generator<Ref, V>::generator(generator&& other) noexcept
     : m_coroutine{std::exchange(other.m_coroutine, {})}
 {
 }
 
 template<typename Ref, typename V>
-constexpr auto mltvrs::async::generator<Ref, V>::operator=(generator&& other) noexcept -> generator&
+auto mltvrs::async::generator<Ref, V>::operator=(generator other) noexcept -> generator&
 {
-    if(this == std::addressof(other)) {
-        return *this;
-    }
-    if(m_coroutine) {
-        m_coroutine.destroy();
-    }
-
-    m_coroutine = std::exchange(other.m_coroutine, nullptr);
+    std::swap(m_coroutine, other.m_coroutine);
+    std::swap(m_active, other.m_active);
 
     return *this;
 }
@@ -116,7 +106,7 @@ mltvrs::async::generator<Ref, V>::~generator() noexcept
 }
 
 template<typename Ref, typename V>
-[[nodiscard]] constexpr auto mltvrs::async::generator<Ref, V>::begin() -> iterator
+[[nodiscard]] auto mltvrs::async::generator<Ref, V>::begin() -> iterator
 {
     m_coroutine.resume();
     return iterator{m_coroutine};
