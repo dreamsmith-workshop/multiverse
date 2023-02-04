@@ -57,6 +57,7 @@ add_library(mltvrs::mltvrs ALIAS mltvrs)
 # Create Testing Target #
 #########################
 
+include(CTest)
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
     find_package(Catch2 REQUIRED)
     add_library(mltvrs::test_main ALIAS Catch2::Catch2WithMain)
