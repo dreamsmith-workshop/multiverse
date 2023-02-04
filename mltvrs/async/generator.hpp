@@ -33,7 +33,9 @@ namespace mltvrs::async {
             [[nodiscard]] auto end() const noexcept { return std::default_sentinel_t{}; }
 
         private:
-            explicit generator(std::coroutine_handle<promise_type> coroutine) noexcept;
+            explicit generator(
+                std::coroutine_handle<promise_type>                  coro,
+                std::unique_ptr<std::stack<std::coroutine_handle<>>> active) noexcept;
 
             std::coroutine_handle<promise_type>                  m_coroutine = nullptr;
             std::unique_ptr<std::stack<std::coroutine_handle<>>> m_active;

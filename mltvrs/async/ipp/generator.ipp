@@ -54,7 +54,9 @@ class mltvrs::async::generator<Ref, V>::promise_type
     public:
         [[nodiscard]] auto get_return_object() noexcept
         {
-            return generator{std::coroutine_handle<promise_type>::from_promise(*this)};
+            return generator{
+                std::coroutine_handle<promise_type>::from_promise(*this),
+                std::make_unique<std::stack<std::coroutine_handle<>>>()};
         }
 
         auto initial_suspend() const noexcept { return std::suspend_always{}; }
@@ -77,8 +79,11 @@ class mltvrs::async::generator<Ref, V>::promise_type
 };
 
 template<typename Ref, typename V>
-mltvrs::async::generator<Ref, V>::generator(std::coroutine_handle<promise_type> coroutine) noexcept
-    : m_coroutine{coroutine}
+mltvrs::async::generator<Ref, V>::generator(
+    std::coroutine_handle<promise_type>                  coro,
+    std::unique_ptr<std::stack<std::coroutine_handle<>>> active) noexcept
+    : m_coroutine{coro},
+      m_active{std::move(active)}
 {
 }
 
