@@ -207,14 +207,15 @@ constexpr void mltvrs::async::task<T>::get() const
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto mltvrs::async::task<T>::get() const -> const value_type&
+[[nodiscard]] constexpr auto mltvrs::async::task<T>::get() const
+    -> detail::task_get_const_return_t<value_type>
     requires(!std::is_void_v<value_type>)
 {
     return m_coroutine.promise().get();
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto mltvrs::async::task<T>::get() -> value_type&
+[[nodiscard]] constexpr auto mltvrs::async::task<T>::get() -> detail::task_get_return_t<value_type>
     requires(!std::is_void_v<value_type>)
 {
     return m_coroutine.promise().get();

@@ -9,6 +9,25 @@ namespace mltvrs::async {
         template<typename Derived, typename T>
         class task_promise_base;
 
+        template<typename T>
+        struct task_get_return
+        {
+                using type       = T&;
+                using const_type = const T&;
+        };
+
+        template<>
+        struct task_get_return<void>
+        {
+                using type       = void;
+                using const_type = void;
+        };
+
+        template<typename T>
+        using task_get_return_t = typename task_get_return<T>::type;
+        template<typename T>
+        using task_get_const_return_t = typename task_get_return<T>::const_type;
+
     } // namespace detail
 
     /**
@@ -93,9 +112,9 @@ namespace mltvrs::async {
             [[nodiscard]] constexpr bool ready() const noexcept;
             constexpr void               get() const
                 requires(std::is_void_v<value_type>);
-            [[nodiscard]] constexpr auto get() const -> const value_type&
+            [[nodiscard]] constexpr auto get() const -> detail::task_get_const_return_t<value_type>
                 requires(!std::is_void_v<value_type>);
-            [[nodiscard]] constexpr auto get() -> value_type&
+            [[nodiscard]] constexpr auto get() -> detail::task_get_return_t<value_type>
                 requires(!std::is_void_v<value_type>);
             [[nodiscard]] constexpr auto get_if() const -> const value_type*;
             [[nodiscard]] constexpr auto get_if() -> value_type*;
