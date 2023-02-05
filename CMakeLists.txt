@@ -34,6 +34,7 @@ set(
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/chrono.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/interval.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/multiverse.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ranges.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/string_literal.hpp
 )
 set(
@@ -59,7 +60,7 @@ add_library(mltvrs::mltvrs ALIAS mltvrs)
 
 include(CTest)
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
-    find_package(Catch2 REQUIRED)
+    find_package(Catch2 3.3.0 REQUIRED)
     add_library(mltvrs::test_main ALIAS Catch2::Catch2WithMain)
 endif()
 
