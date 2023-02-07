@@ -7,6 +7,17 @@
 
 namespace mltvrs {
 
+    /**
+     * @brief A generator coroutine presenting a sequence view of elements.
+     *
+     * This template implements `std::generator` from the C++23 Standard, with the below-noted
+     * deviations.
+     *
+     * @note This template does not support allocators.
+     *
+     * @tparam Ref The type of result to generate.
+     * @tparam V   The generator iterator value type.
+     */
     template<typename Ref, typename V = void>
     class generator : public std::ranges::view_interface<generator<Ref, V>>
     {
