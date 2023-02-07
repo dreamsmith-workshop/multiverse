@@ -14,8 +14,7 @@ CATCH_TEMPLATE_TEST_CASE(
         namespace ranges = std::ranges;
         namespace views  = ranges::views;
 
-        const auto gen_coro =
-            [](const ranges::input_range auto& input) -> mltvrs::ranges::generator<int>
+        const auto gen_coro = [](const ranges::input_range auto& input) -> mltvrs::generator<int>
         {
             for(const auto& elem : input) {
                 co_yield elem;
@@ -43,7 +42,7 @@ CATCH_TEMPLATE_TEST_CASE(
             constexpr auto repeats = 3;
 
             const auto recurse_coro =
-                [&](const ranges::input_range auto& input) -> mltvrs::ranges::generator<int>
+                [&](const ranges::input_range auto& input) -> mltvrs::generator<int>
             {
                 for(auto i = 0; i < repeats; ++i) {
                     co_yield mltvrs::ranges::elements_of{gen_coro(input)};
