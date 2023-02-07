@@ -7,7 +7,7 @@
 namespace mltvrs::detail {
 
     template<typename Yielded, typename PromiseType>
-    struct suspend_const_lval
+    class suspend_const_lval
     {
         public:
             std::remove_cvref_t<Yielded> value;
@@ -24,7 +24,7 @@ namespace mltvrs::detail {
     };
 
     template<typename Yielded, typename PromiseType>
-    struct suspend_mutable_lval
+    class suspend_mutable_lval
     {
         public:
             std::remove_cvref_t<Yielded> value;
