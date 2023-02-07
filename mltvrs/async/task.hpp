@@ -58,14 +58,14 @@ namespace mltvrs::async {
             explicit constexpr task(std::coroutine_handle<promise_type> coro) noexcept;
 
             //! @brief Disable copy construction.
-            task(const task& rhs) = delete;
+            constexpr task(const task& rhs) = delete;
             //! @brief Move ownership of a coroutine into a new task.
-            task(task&& rhs) noexcept : m_coroutine{std::exchange(rhs.m_coroutine, nullptr)} {}
+            constexpr task(task&& rhs) noexcept;
 
             //! @brief Disable copy assignment.
-            auto operator=(const task& rhs) -> task& = delete;
+            constexpr auto operator=(const task& rhs) -> task& = delete;
             //! @brief Move ownership of a coroutine via assignment.
-            auto operator=(task&& rhs) noexcept -> task&;
+            constexpr auto operator=(task&& rhs) noexcept -> task&;
 
             ~task() noexcept; //!< Destroy a suspended coroutine.
 
