@@ -1,4 +1,4 @@
-#include <mltvrs/async/generator.hpp>
+#include <mltvrs/generator.hpp>
 
 #include <catch2/catch_all.hpp>
 
@@ -10,7 +10,7 @@ CATCH_SCENARIO("iterating over a generator produces the correct results")
         namespace views  = ranges::views;
 
         const auto gen_coro =
-            [](const ranges::input_range auto& input) -> mltvrs::async::generator<const int&>
+            [](const ranges::input_range auto& input) -> mltvrs::ranges::generator<const int&>
         {
             for(const auto& elem : input) {
                 co_yield elem;
@@ -38,7 +38,7 @@ CATCH_SCENARIO("iterating over a generator produces the correct results")
             constexpr auto repeats = 3;
 
             const auto recurse_coro =
-                [&](const ranges::input_range auto& input) -> mltvrs::async::generator<const int&>
+                [&](const ranges::input_range auto& input) -> mltvrs::ranges::generator<const int&>
             {
                 for(auto i = 0; i < repeats; ++i) {
                     co_yield mltvrs::ranges::elements_of{gen_coro(input)};

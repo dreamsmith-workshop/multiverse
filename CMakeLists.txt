@@ -32,6 +32,7 @@ find_package(Microsoft.GSL REQUIRED)
 set(
     MLTVRS_HPP
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/chrono.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/generator.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/interval.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/multiverse.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ranges.hpp
@@ -39,6 +40,7 @@ set(
 )
 set(
     MLTVRS_IPP
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/generator.ipp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/interval.ipp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/string_literal.ipp
 )
@@ -62,6 +64,10 @@ include(CTest)
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
     find_package(Catch2 3.3.0 REQUIRED)
     add_library(mltvrs::test_main ALIAS Catch2::Catch2WithMain)
+    
+    add_executable(mltvrs_test_generator ${CMAKE_CURRENT_LIST_DIR}/mltvrs/test/test_generator.cpp)
+    target_link_libraries(mltvrs_test_generator PRIVATE mltvrs::mltvrs mltvrs::test_main)
+    add_test(NAME mltvrs_test_generator COMMAND mltvrs_test_generator)
 endif()
 
 #####################
