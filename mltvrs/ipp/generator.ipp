@@ -4,7 +4,7 @@
 
 #include <mltvrs/ranges.hpp>
 
-namespace mltvrs::ranges::detail {
+namespace mltvrs::detail {
 
     template<typename Yielded, typename PromiseType>
     struct suspend_const_lval
@@ -59,10 +59,10 @@ namespace mltvrs::ranges::detail {
         return std::visit([](const auto& ptr) { return generator_value_deref(ptr); }, pointer->ptr);
     }
 
-} // namespace mltvrs::ranges::detail
+} // namespace mltvrs::detail
 
 template<typename Ref, typename V>
-class mltvrs::ranges::generator<Ref, V>::iterator
+class mltvrs::generator<Ref, V>::iterator
 {
     public:
         using value_type      = value;
@@ -120,7 +120,7 @@ class mltvrs::ranges::generator<Ref, V>::iterator
 };
 
 template<typename Ref, typename V>
-class mltvrs::ranges::generator<Ref, V>::promise_type
+class mltvrs::generator<Ref, V>::promise_type
 {
     public:
         [[nodiscard]] auto get_return_object() noexcept
@@ -254,7 +254,7 @@ class mltvrs::ranges::generator<Ref, V>::promise_type
 };
 
 template<typename Ref, typename V>
-mltvrs::ranges::generator<Ref, V>::generator(
+mltvrs::generator<Ref, V>::generator(
     std::coroutine_handle<promise_type>                  coro,
     std::unique_ptr<std::stack<std::coroutine_handle<>>> active) noexcept
     : m_coroutine{coro},
@@ -263,13 +263,13 @@ mltvrs::ranges::generator<Ref, V>::generator(
 }
 
 template<typename Ref, typename V>
-mltvrs::ranges::generator<Ref, V>::generator(generator&& other) noexcept
+mltvrs::generator<Ref, V>::generator(generator&& other) noexcept
     : m_coroutine{std::exchange(other.m_coroutine, {})}
 {
 }
 
 template<typename Ref, typename V>
-auto mltvrs::ranges::generator<Ref, V>::operator=(generator other) noexcept -> generator&
+auto mltvrs::generator<Ref, V>::operator=(generator other) noexcept -> generator&
 {
     std::swap(m_coroutine, other.m_coroutine);
     std::swap(m_active, other.m_active);
@@ -278,7 +278,7 @@ auto mltvrs::ranges::generator<Ref, V>::operator=(generator other) noexcept -> g
 }
 
 template<typename Ref, typename V>
-mltvrs::ranges::generator<Ref, V>::~generator() noexcept
+mltvrs::generator<Ref, V>::~generator() noexcept
 {
     if(m_coroutine) {
         m_coroutine.destroy();
@@ -286,7 +286,7 @@ mltvrs::ranges::generator<Ref, V>::~generator() noexcept
 }
 
 template<typename Ref, typename V>
-[[nodiscard]] auto mltvrs::ranges::generator<Ref, V>::begin() -> iterator
+[[nodiscard]] auto mltvrs::generator<Ref, V>::begin() -> iterator
 {
     m_active->push(m_coroutine);
     m_coroutine.resume();

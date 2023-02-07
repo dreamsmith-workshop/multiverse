@@ -5,7 +5,7 @@
 #include <ranges>
 #include <stack>
 
-namespace mltvrs::ranges {
+namespace mltvrs {
 
     template<typename Ref, typename V = void>
     class generator : public std::ranges::view_interface<generator<Ref, V>>
@@ -41,6 +41,6 @@ namespace mltvrs::ranges {
             std::unique_ptr<std::stack<std::coroutine_handle<>>> m_active;
     };
 
-} // namespace mltvrs::ranges
+} // namespace mltvrs
 
 #include <mltvrs/ipp/generator.ipp>
