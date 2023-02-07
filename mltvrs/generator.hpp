@@ -25,13 +25,12 @@ namespace mltvrs {
             using value     = std::conditional_t<std::is_void_v<V>, std::remove_cvref_t<Ref>, V>;
             using reference = std::conditional_t<std::is_void_v<V>, Ref&&, Ref>;
 
-            class iterator;
-
         public:
             using yielded =
                 std::conditional_t<std::is_reference_v<reference>, reference, const reference&>;
 
             class promise_type;
+            class iterator;
 
             generator(const generator&) = delete;
             generator(generator&& other) noexcept;
