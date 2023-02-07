@@ -53,8 +53,9 @@ namespace mltvrs::detail {
     }
 
     template<typename Yielded>
-    [[nodiscard]] constexpr auto*
+    [[nodiscard]] constexpr auto
     generator_value_deref(const generator_value_ptr<Yielded>* pointer) noexcept
+        -> std::add_pointer_t<Yielded>
     {
         return std::visit([](const auto& ptr) { return generator_value_deref(ptr); }, pointer->ptr);
     }
