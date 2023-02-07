@@ -10,37 +10,9 @@
 
 #include <mltvrs/chrono.hpp>
 
+#include <mltvrs/async/concepts.hpp>
+
 namespace mltvrs::async {
-
-    /**
-     * @brief An Asio-compatible executor.
-     *
-     * See
-     * [Boost.Asio](https://www.boost.org/doc/libs/1_81_0/doc/html/boost_asio/reference/Executor1.html)
-     * documentation for both Networking TS and Standard executor requirements.
-     *
-     * @tparam T The type to check against this concept.
-     */
-    template<typename T>
-    concept executor =
-        boost::asio::is_executor<T>::value || boost::asio::execution::is_executor_v<T>;
-
-    /**
-     * @brief An Asio-style execution context.
-     *
-     * See
-     * [Boost.Asio](https://www.boost.org/doc/libs/1_81_0/doc/html/boost_asio/reference/ExecutionContext.html)
-     * documentation for execution context requirements.
-     *
-     * @tparam T The type to check against this concept.
-     */
-    template<typename T>
-    concept execution_context = std::derived_from<T, boost::asio::execution_context>
-                             && executor<typename T::executor_type> &&
-                                // clang-format off
-        requires(T ctx) {
-            { ctx.get_executor() } -> std::same_as<typename T::executor_type>;
-        }; // clang-format on
 
     namespace detail {
 
