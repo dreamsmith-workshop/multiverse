@@ -16,7 +16,7 @@ namespace mltvrs {
      * @note This template does not support allocators.
      *
      * @tparam Ref The type of result to generate.
-     * @tparam V   The generator iterator value type.
+     * @tparam V   An optional override type for the generator iterator value type.
      */
     template<typename Ref, typename V = void>
     class generator : public std::ranges::view_interface<generator<Ref, V>>
