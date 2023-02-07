@@ -6,6 +6,40 @@
 
 namespace mltvrs::ranges::detail {
 
+    template<typename Yielded, typename PromiseType>
+    struct suspend_const_lval
+    {
+        public:
+            std::remove_cvref_t<Yielded> value;
+            PromiseType*                 prom;
+
+            constexpr bool await_ready() const noexcept { return false; }
+
+            void await_suspend(std::coroutine_handle<> /* awaiter */) const noexcept
+            {
+                prom->m_value.ptr = std::addressof(value);
+            }
+
+            constexpr void await_resume() const noexcept {}
+    };
+
+    template<typename Yielded, typename PromiseType>
+    struct suspend_mutable_lval
+    {
+        public:
+            std::remove_cvref_t<Yielded> value;
+            PromiseType*                 prom;
+
+            constexpr bool await_ready() const noexcept { return false; }
+
+            void await_suspend(std::coroutine_handle<> /* awaiter */) noexcept
+            {
+                prom->m_value.ptr = std::addressof(value);
+            }
+
+            constexpr void await_resume() const noexcept {}
+    };
+
     template<typename Yielded>
     struct generator_value_ptr
     {
@@ -13,7 +47,7 @@ namespace mltvrs::ranges::detail {
             std::variant<std::add_pointer_t<Yielded>, const generator_value_ptr*> ptr;
     };
 
-    [[nodiscard]] constexpr auto* generator_value_deref(const auto* value) noexcept
+    [[nodiscard]] constexpr auto* generator_value_deref(auto* value) noexcept
     {
         return value;
     }
@@ -142,23 +176,12 @@ class mltvrs::ranges::generator<Ref, V>::promise_type
         {
             Expects(m_active->top() == std::coroutine_handle<promise_type>::from_promise(*this));
 
-            struct suspend_lval
-            {
-                public:
-                    std::remove_cvref_t<yielded> value;
-                    promise_type*                prom;
+            using awaitable_type = std::conditional_t<
+                std::is_const_v<yielded>,
+                detail::suspend_const_lval<yielded, promise_type>,
+                detail::suspend_mutable_lval<yielded, promise_type>>;
 
-                    constexpr bool await_ready() const noexcept { return false; }
-
-                    void await_suspend(std::coroutine_handle<> /* awaiter */) const noexcept
-                    {
-                        prom->m_value = std::addressof(value);
-                    }
-
-                    constexpr void await_resume() const noexcept {}
-            };
-
-            return suspend_lval{.value = lval, .prom = this};
+            return awaitable_type{.value = lval, .prom = this};
         }
 
         template<typename R2>
@@ -222,6 +245,8 @@ class mltvrs::ranges::generator<Ref, V>::promise_type
 
     private:
         friend class iterator;
+        friend class detail::suspend_const_lval<yielded, promise_type>;
+        friend class detail::suspend_mutable_lval<yielded, promise_type>;
 
         std::stack<std::coroutine_handle<>>* m_active = nullptr;
         detail::generator_value_ptr<yielded> m_value  = {};
