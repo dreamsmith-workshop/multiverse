@@ -14,6 +14,7 @@ option(MLTVRS_ENABLE_DETAILED_CONCEPTS_DIAGNOSTICS OFF)
 option(MLTVRS_ENABLE_TESTING                       OFF)
 option(MLTVRS_ENABLE_STATIC_STDLIB                 OFF)
 option(MLTVRS_ENABLE_CONAN_OVERRIDE                OFF)
+option(MLTVRS_ENABLE_CATCH_SUBMODULE_OVERRIDE      OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -62,8 +63,21 @@ add_library(mltvrs::mltvrs ALIAS mltvrs)
 
 include(CTest)
 if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
-    find_package(Catch2 3.3.0 REQUIRED)
-    add_library(mltvrs::test_main ALIAS Catch2::Catch2WithMain)
+    if(MLTVRS_ENABLE_CATCH_SUBMODULE_OVERRIDE)
+        execute_process(
+            COMMAND
+                git submodule update --init
+            WORKING_DIRECTORY
+                ${CMAKE_CURRENT_LIST_DIR}
+        )
+        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/catchorg/Catch2)
+    else()
+        find_package(Catch2 3.3.0 REQUIRED)
+    endif()
+    add_library(mltvrs_test_main INTERFACE)
+    target_compile_definitions(mltvrs_test_main INTERFACE -DCATCH_CONFIG_PREFIX_ALL)
+    target_link_libraries(mltvrs_test_main INTERFACE Catch2::Catch2WithMain)
+    add_library(mltvrs::test_main ALIAS mltvrs_test_main)
     
     add_executable(mltvrs_test_generator ${CMAKE_CURRENT_LIST_DIR}/mltvrs/test/test_generator.cpp)
     target_link_libraries(mltvrs_test_generator PRIVATE mltvrs::mltvrs mltvrs::test_main)

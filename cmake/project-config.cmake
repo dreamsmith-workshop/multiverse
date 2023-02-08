@@ -160,6 +160,9 @@ function(mltvrs_configure_project)
     # handle testing
     mltvrs_report_option(ENABLE_TESTING)
 
+    # embedded Catch
+    mltvrs_report_option(ENABLE_CATCH_SUBMODULE_OVERRIDE)
+
     set(
         CMAKE_EXE_LINKER_FLAGS
             "${CMAKE_EXE_LINKER_FLAGS}"
