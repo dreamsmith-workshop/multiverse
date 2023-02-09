@@ -94,7 +94,7 @@ class mltvrs::async::future<T>::promise_type
 
         void wait() const
         {
-            if(!m_semaphore.try_acquire()) {
+            if(!m_fulfilled) {
                 m_semaphore.acquire();
             }
         }
@@ -103,7 +103,7 @@ class mltvrs::async::future<T>::promise_type
         [[nodiscard]] auto wait_for(const std::chrono::duration<D...> timeout) const
             -> std::future_status
         {
-            return !m_semaphore.try_acquire()           ? std::future_status::ready
+            return m_fulfilled                          ? std::future_status::ready
                  : m_semaphore.try_acquire_for(timeout) ? std::future_status::ready
                                                         : std::future_status::timeout;
         }
@@ -112,7 +112,7 @@ class mltvrs::async::future<T>::promise_type
         [[nodiscard]] auto wait_until(const std::chrono::time_point<P...> timeout) const
             -> std::future_status
         {
-            return !m_semaphore.try_acquire()             ? std::future_status::ready
+            return m_fulfilled                            ? std::future_status::ready
                  : m_semaphore.try_acquire_until(timeout) ? std::future_status::ready
                                                           : std::future_status::timeout;
         }
@@ -151,6 +151,7 @@ class mltvrs::async::future<T>::promise_type
         std::coroutine_handle<>       m_continuation{nullptr};
         result_state                  m_result{};
         mutable std::binary_semaphore m_semaphore{0};
+        mutable std::atomic<bool>     m_fulfilled{false};
 };
 
 template<typename T>
