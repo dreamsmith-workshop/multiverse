@@ -41,7 +41,21 @@ namespace mltvrs::async {
     namespace detail {
 
         template<typename T>
-        concept bool_or_void = std::same_as<T, bool> || std::same_as<T, void>;
+        struct is_coroutine_handle : public std::false_type
+        {
+        };
+
+        template<typename PromiseType>
+        struct is_coroutine_handle<std::coroutine_handle<PromiseType>> : public std::true_type
+        {
+        };
+
+        template<typename T>
+        inline constexpr bool is_coroutine_handle_v = is_coroutine_handle<T>::value;
+
+        template<typename T>
+        concept bool_or_void_or_coro_handle =
+            std::same_as<T, bool> || std::same_as<T, void> || is_coroutine_handle_v<T>;
 
         template<typename T>
         concept awaiter =
@@ -49,8 +63,8 @@ namespace mltvrs::async {
                 // clang-format off
                 { cref.await_ready() }          -> std::same_as<bool>;
                 { rref.await_ready() }          -> std::same_as<bool>;
-                { mref.await_suspend(awaiter) } -> bool_or_void<>;
-                { rref.await_suspend(awaiter) } -> bool_or_void<>;
+                { mref.await_suspend(awaiter) } -> bool_or_void_or_coro_handle<>;
+                { rref.await_suspend(awaiter) } -> bool_or_void_or_coro_handle<>;
                 { mref.await_resume() };
                 { rref.await_resume() };
                 // clang-format on
