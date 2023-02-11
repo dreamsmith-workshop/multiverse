@@ -85,6 +85,23 @@ namespace mltvrs::async {
         concept global_co_awaitable =
             direct_co_awaitable<decltype(operator co_await(std::declval<T>()))>;
 
+        template<typename Promise, typename Return>
+        concept returns_void = std::is_void_v<Return> &&
+                               // clang-format off
+            requires(Promise prom) {
+                { prom.return_void() };
+            }; // clang-format on
+
+        template<typename Promise, typename Return>
+        concept returns_value = std::same_as<Return, any_type> ||
+                                // clang-format off
+            requires(Promise prom, Return&& ret) {
+                { prom.return_value(std::forward<Return>(ret)) };
+            }; // clang-format on
+
+        template<typename Promise, typename Return>
+        concept has_return_member = returns_void<Promise, Return> || returns_value<Promise, Return>;
+
         template<typename T>
         using coro_prom_t = typename std::coroutine_traits<T>::promise_type;
 
@@ -105,9 +122,9 @@ namespace mltvrs::async {
     concept awaitable = detail::direct_co_awaitable<T> || detail::member_co_awaitable<T>
                      || detail::global_co_awaitable<T>;
 
-    template<typename T, typename Coroutine = detail::any_type>
-    concept coroutine_promise =
-        // clang-format off
+    template<typename T, typename Return = detail::any_type, typename Coroutine = detail::any_type>
+    concept coroutine_promise = detail::has_return_member<T, Return> &&
+                                // clang-format off
         requires(T promise) {
             { promise.initial_suspend() }     -> awaitable<>;
             { promise.final_suspend() }       -> awaitable<>;
@@ -115,9 +132,11 @@ namespace mltvrs::async {
             { promise.get_return_object() }   -> detail::coroutine_for<T, Coroutine>;
         }; // clang-format on
 
-    template<typename T>
-    concept coroutine =
-        coroutine_promise<detail::coro_prom_t<std::remove_cvref_t<T>>, std::remove_cvref_t<T>>;
+    template<typename T, typename Return = detail::any_type>
+    concept coroutine = coroutine_promise<
+        detail::coro_prom_t<std::remove_cvref_t<T>>,
+        Return,
+        std::remove_cvref_t<T>>;
 
     template<coroutine Coroutine>
     struct coroutine_traits;
