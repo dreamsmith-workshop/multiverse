@@ -14,13 +14,20 @@
 #include <boost/asio/post.hpp>
 
 #include <mltvrs/async/concepts.hpp>
+#include <mltvrs/async/type_traits.hpp>
 
 namespace mltvrs::async {
+
+    template<typename T>
+    class future;
 
     namespace detail {
 
         template<typename T>
         class continuation_base;
+
+        template<typename T>
+        [[nodiscard]] auto handle_of(const future<T>& fut) noexcept;
 
     } // namespace detail
 
@@ -69,11 +76,27 @@ namespace mltvrs::async {
             }
 
         private:
+            friend auto detail::handle_of(const future& fut) noexcept;
+
             explicit future(std::coroutine_handle<promise_type> coro) noexcept;
 
             std::coroutine_handle<promise_type> m_coroutine;
     };
 
 } // namespace mltvrs::async
+
+template<typename T>
+struct mltvrs::async::coroutine_traits<mltvrs::async::future<T>>
+    : public std::coroutine_traits<future<T>>
+{
+    public:
+        using coroutine_type = future<T>;
+        using promise_type   = promise_type_t<coroutine_type>;
+
+        [[nodiscard]] static auto handle_of(const coroutine_type& coro) noexcept
+            -> std::coroutine_handle<promise_type>;
+        [[nodiscard]] static auto handle_of(coroutine_type& coro) noexcept
+            -> std::coroutine_handle<promise_type>;
+};
 
 #include <mltvrs/async/ipp/future.ipp>
