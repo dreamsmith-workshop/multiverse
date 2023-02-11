@@ -7,14 +7,23 @@ namespace mltvrs::async::detail {
             std::forward<decltype(coro)>(coro));
     }
 
+    template<typename... P>
+    void execute_until(const coro_handle auto& coro, std::chrono::time_point<P...> timeout)
+    {
+        using clock = typename std::chrono::time_point<P...>::clock;
+        while(!coro.done() && (clock::now() < timeout)) {
+            coro.resume();
+        }
+    }
+
 } // namespace mltvrs::async::detail
 
 void mltvrs::async::execute(executable auto&& coro)
 {
     const auto handle = detail::coro_handle_of(std::forward<decltype(coro)>(coro));
-    do {
+    while(!handle.done()) {
         handle.resume();
-    } while(!handle.done());
+    }
 }
 
 void mltvrs::async::execute_once(executable auto&& coro)
@@ -25,17 +34,13 @@ void mltvrs::async::execute_once(executable auto&& coro)
 template<typename... D>
 void mltvrs::async::execute_for(executable auto&& coro, std::chrono::duration<D...> timeout)
 {
-    const auto end = std::chrono::steady_clock::now() + timeout;
-    do {
-        execute_once(coro);
-    } while(std::chrono::steady_clock::now() < end);
+    detail::execute_until(
+        detail::coro_handle_of(std::forward<decltype(coro)>(coro)),
+        std::chrono::steady_clock::now() + timeout);
 }
 
 template<typename... P>
 void mltvrs::async::execute_until(executable auto&& coro, std::chrono::time_point<P...> timeout)
 {
-    using clock = typename std::chrono::time_point<P...>::clock;
-    do {
-        execute_once(coro);
-    } while(clock::now() < timeout);
+    detail::execute_until(detail::coro_handle_of(std::forward<decltype(coro)>(coro)), timeout);
 }
