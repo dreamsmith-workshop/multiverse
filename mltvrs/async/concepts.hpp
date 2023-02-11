@@ -40,6 +40,10 @@ namespace mltvrs::async {
 
     namespace detail {
 
+        struct any_type
+        {
+        };
+
         template<typename T>
         struct is_coroutine_handle : public std::false_type
         {
@@ -54,11 +58,14 @@ namespace mltvrs::async {
         inline constexpr bool is_coroutine_handle_v = is_coroutine_handle<T>::value;
 
         template<typename T>
-        concept bool_or_void_or_coro_handle =
-            std::same_as<T, bool> || std::same_as<T, void> || is_coroutine_handle_v<T>;
+        concept coro_handle = is_coroutine_handle_v<T>;
 
         template<typename T>
-        concept awaiter =
+        concept bool_or_void_or_coro_handle =
+            std::same_as<T, bool> || std::same_as<T, void> || coro_handle<T>;
+
+        template<typename T>
+        concept direct_co_awaitable =
             requires(T& mref, const T& cref, T&& rref, std::coroutine_handle<> awaiter) {
                 // clang-format off
                 { cref.await_ready() }          -> std::same_as<bool>;
@@ -71,15 +78,54 @@ namespace mltvrs::async {
             };
 
         template<typename T>
-        concept member_co_awaitable = awaiter<decltype(std::declval<T>().operator co_await())>;
+        concept member_co_awaitable =
+            direct_co_awaitable<decltype(std::declval<T>().operator co_await())>;
 
         template<typename T>
-        concept global_co_awaitable = awaiter<decltype(operator co_await(std::declval<T>()))>;
+        concept global_co_awaitable =
+            direct_co_awaitable<decltype(operator co_await(std::declval<T>()))>;
+
+        template<typename T>
+        using coro_prom_t = typename std::coroutine_traits<T>::promise_type;
+
+        template<typename Coroutine, typename Promise>
+        concept coro_for = std::same_as<Promise, coro_prom_t<Coroutine>>;
+
+        template<typename Coroutine, typename Promise>
+        concept any_coro_for =
+            std::same_as<Coroutine, any_type>
+            && coro_for<decltype(std::declval<Promise>().get_return_object()), Promise>;
+
+        template<typename T, typename Promise, typename Coroutine>
+        concept coroutine_for = any_coro_for<Coroutine, Coroutine> || coro_for<Coroutine, Promise>;
 
     } // namespace detail
 
     template<typename T>
-    concept awaitable =
-        detail::awaiter<T> || detail::member_co_awaitable<T> || detail::global_co_awaitable<T>;
+    concept awaitable = detail::direct_co_awaitable<T> || detail::member_co_awaitable<T>
+                     || detail::global_co_awaitable<T>;
+
+    template<typename T, typename Coroutine = detail::any_type>
+    concept coroutine_promise =
+        // clang-format off
+        requires(T promise) {
+            { promise.initial_suspend() }     -> awaitable<>;
+            { promise.final_suspend() }       -> awaitable<>;
+            { promise.unhandled_exception() };
+            { promise.get_return_object() }   -> detail::coroutine_for<T, Coroutine>;
+        }; // clang-format on
+
+    template<typename T>
+    concept coroutine =
+        coroutine_promise<detail::coro_prom_t<std::remove_cvref_t<T>>, std::remove_cvref_t<T>>;
+
+    template<coroutine Coroutine>
+    struct coroutine_traits;
+
+    template<typename T>
+    concept executable =
+        detail::coro_handle<decltype(coroutine_traits<std::remove_cvref_t<T>>::handle_of(
+            std::declval<T>()))>
+        || awaitable<std::remove_cvref_t<T>>;
 
 } // namespace mltvrs::async
