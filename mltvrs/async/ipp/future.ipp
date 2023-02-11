@@ -273,7 +273,6 @@ template<typename T>
 mltvrs::async::future<T>::~future() noexcept
 {
     if(m_coroutine) {
-        wait();
         m_coroutine.destroy();
     }
 }

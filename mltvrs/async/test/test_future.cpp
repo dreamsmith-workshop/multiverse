@@ -5,6 +5,8 @@
 
 CATCH_SCENARIO("a coroutine returning a future allows the caller to obtain the result")
 {
+    using namespace std::chrono_literals;
+
     CATCH_GIVEN("a couroutine that returns a result without yielding in the middle")
     {
         constexpr auto coro = [](int arg) -> mltvrs::async::future<int> { co_return arg; };
@@ -18,8 +20,6 @@ CATCH_SCENARIO("a coroutine returning a future allows the caller to obtain the r
 
             CATCH_THEN("the associated future becomes ready, and returns the correct value")
             {
-                using namespace std::chrono_literals;
-
                 CATCH_REQUIRE(future.wait_for(0s) == std::future_status::ready);
                 CATCH_REQUIRE(future.get() == data);
                 CATCH_REQUIRE_THROWS_AS(future.get(), std::future_error);
@@ -29,16 +29,38 @@ CATCH_SCENARIO("a coroutine returning a future allows the caller to obtain the r
 
     CATCH_GIVEN("a coroutine that returns a result with internal yields")
     {
-        CATCH_WHEN("that coroutine is executed without the completion criteria being met")
+        auto       finish = std::atomic<bool>{false};
+        const auto coro   = [&](int arg) -> mltvrs::async::future<int>
         {
-            CATCH_THEN("the associated future does not become ready")
-            {
+            while(!finish) {
+                co_await std::suspend_always{};
             }
 
-            CATCH_AND_WHEN("that coroutine is executed with the completion criteria met")
+            co_return arg;
+        };
+
+        CATCH_WHEN("that coroutine is executed without the completion criteria being met")
+        {
+            const auto data = GENERATE(take(5, random(-100, 100)));
+
+            auto future = coro(data);
+            mltvrs::async::execute_for(future, 10ms);
+
+            CATCH_THEN("the associated future does not become ready")
             {
+                CATCH_REQUIRE(future.wait_for(1s) == std::future_status::timeout);
+            }
+
+            CATCH_WHEN("that coroutine is executed with the completion criteria met")
+            {
+                finish = true;
+                mltvrs::async::execute_for(future, 10ms);
+
                 CATCH_THEN("the associated future becomes ready, and returns the correct value")
                 {
+                    CATCH_REQUIRE(future.wait_for(0s) == std::future_status::ready);
+                    CATCH_REQUIRE(future.get() == data);
+                    CATCH_REQUIRE_THROWS_AS(future.get(), std::future_error);
                 }
             }
         }
