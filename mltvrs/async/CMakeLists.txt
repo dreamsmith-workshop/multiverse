@@ -15,17 +15,17 @@ set(
     MLTVRS_ASYNC_HPP
         ${CMAKE_CURRENT_LIST_DIR}/concepts.hpp
         ${CMAKE_CURRENT_LIST_DIR}/coroutine.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/execute.hpp
         ${CMAKE_CURRENT_LIST_DIR}/future.hpp
         ${CMAKE_CURRENT_LIST_DIR}/task.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/this_thread.hpp
         ${CMAKE_CURRENT_LIST_DIR}/type_traits.hpp
 )
 set(
     MLTVRS_ASYNC_IPP
         ${CMAKE_CURRENT_LIST_DIR}/ipp/coroutine.ipp
-        ${CMAKE_CURRENT_LIST_DIR}/ipp/execute.ipp
         ${CMAKE_CURRENT_LIST_DIR}/ipp/future.ipp
         ${CMAKE_CURRENT_LIST_DIR}/ipp/task.ipp
+        ${CMAKE_CURRENT_LIST_DIR}/ipp/this_thread.ipp
 )
 set(
     MLTVRS_ASYNC_CPP

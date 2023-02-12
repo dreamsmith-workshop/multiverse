@@ -1,14 +1,16 @@
 
-namespace mltvrs::async::detail {
+namespace mltvrs::this_thread::detail {
 
-    [[nodiscard]] constexpr auto coro_handle_of(coroutine auto&& coro) noexcept
+    [[nodiscard]] constexpr auto coro_handle_of(async::coroutine auto&& coro) noexcept
     {
-        return coroutine_traits<std::remove_cvref_t<decltype(coro)>>::handle_of(
+        return async::coroutine_traits<std::remove_cvref_t<decltype(coro)>>::handle_of(
             std::forward<decltype(coro)>(coro));
     }
 
     template<typename... P>
-    void execute_until(const coro_handle auto& coro, std::chrono::time_point<P...> timeout)
+    void execute_until(
+        const async::detail::coro_handle auto& coro,
+        std::chrono::time_point<P...>          timeout)
     {
         using clock = typename std::chrono::time_point<P...>::clock;
         while(!coro.done() && (clock::now() < timeout)) {
@@ -16,9 +18,9 @@ namespace mltvrs::async::detail {
         }
     }
 
-} // namespace mltvrs::async::detail
+} // namespace mltvrs::this_thread::detail
 
-void mltvrs::async::execute(executable auto&& coro)
+void mltvrs::this_thread::execute(async::executable auto&& coro)
 {
     const auto handle = detail::coro_handle_of(std::forward<decltype(coro)>(coro));
     while(!handle.done()) {
@@ -26,13 +28,15 @@ void mltvrs::async::execute(executable auto&& coro)
     }
 }
 
-void mltvrs::async::execute_once(executable auto&& coro)
+void mltvrs::this_thread::execute_once(async::executable auto&& coro)
 {
     detail::coro_handle_of(std::forward<decltype(coro)>(coro)).resume();
 }
 
 template<typename... D>
-void mltvrs::async::execute_for(executable auto&& coro, std::chrono::duration<D...> timeout)
+void mltvrs::this_thread::execute_for(
+    async::executable auto&&    coro,
+    std::chrono::duration<D...> timeout)
 {
     detail::execute_until(
         detail::coro_handle_of(std::forward<decltype(coro)>(coro)),
@@ -40,7 +44,9 @@ void mltvrs::async::execute_for(executable auto&& coro, std::chrono::duration<D.
 }
 
 template<typename... P>
-void mltvrs::async::execute_until(executable auto&& coro, std::chrono::time_point<P...> timeout)
+void mltvrs::this_thread::execute_until(
+    async::executable auto&&      coro,
+    std::chrono::time_point<P...> timeout)
 {
     detail::execute_until(detail::coro_handle_of(std::forward<decltype(coro)>(coro)), timeout);
 }

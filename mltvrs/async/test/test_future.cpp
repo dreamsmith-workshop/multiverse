@@ -1,5 +1,7 @@
-#include <mltvrs/async/execute.hpp>
-#include <mltvrs/async/future.hpp>
+// clang-format off
+#include <mltvrs/async/future.hpp> // clang-format on
+
+#include <mltvrs/async/this_thread.hpp>
 
 #include <catch2/catch_all.hpp>
 
@@ -16,7 +18,7 @@ CATCH_SCENARIO("a coroutine returning a future allows the caller to obtain the r
             const auto data = GENERATE(take(5, random(-100, 100)));
 
             auto future = coro(data);
-            mltvrs::async::execute(future);
+            mltvrs::this_thread::execute(future);
 
             CATCH_THEN("the associated future becomes ready, and returns the correct value")
             {
@@ -44,7 +46,7 @@ CATCH_SCENARIO("a coroutine returning a future allows the caller to obtain the r
             const auto data = GENERATE(take(5, random(-100, 100)));
 
             auto future = coro(data);
-            mltvrs::async::execute_for(future, 10ms);
+            mltvrs::this_thread::execute_for(future, 10ms);
 
             CATCH_THEN("the associated future does not become ready")
             {
@@ -54,7 +56,7 @@ CATCH_SCENARIO("a coroutine returning a future allows the caller to obtain the r
             CATCH_WHEN("that coroutine is executed with the completion criteria met")
             {
                 finish = true;
-                mltvrs::async::execute_for(future, 10ms);
+                mltvrs::this_thread::execute_for(future, 10ms);
 
                 CATCH_THEN("the associated future becomes ready, and returns the correct value")
                 {
