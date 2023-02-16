@@ -42,7 +42,7 @@ namespace mltvrs {
     };
 
     template<typename F1, typename F2, typename F3, typename... FN>
-    struct overload<F1, F2, F3, FN...> : public overload<F2, F3, FN...>
+    struct overload<F1, F2, F3, FN...> : public F1, overload<F2, F3, FN...>
     {
         public:
             constexpr overload(F1 f1, F2 f2, F3 f3, FN... fn) noexcept

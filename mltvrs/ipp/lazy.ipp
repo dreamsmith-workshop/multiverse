@@ -3,6 +3,10 @@
 #include <utility>
 #include <variant>
 
+#include <gsl/gsl_assert>
+
+#include <mltvrs/functional.hpp>
+
 namespace mltvrs::detail {
 
     template<typename T>
@@ -41,6 +45,43 @@ namespace mltvrs::detail {
             }
     };
 
+    template<typename T>
+    struct lazy_value
+    {
+        public:
+            T value;
+
+            [[nodiscard]] operator const T&() const& noexcept { return value; }
+            [[nodiscard]] operator T&() & noexcept { return value; }
+            [[nodiscard]] operator const T&&() const&& noexcept { return std::move(value); }
+            [[nodiscard]] operator T&&() && noexcept { return std::move(value); }
+    };
+
+    template<>
+    struct lazy_value<void>
+    {
+    };
+
+    template<typename T>
+    struct lazy_value<const T&>
+    {
+        public:
+            std::reference_wrapper<T> value;
+
+            [[nodiscard]] operator const T&() const& noexcept { return value; }
+            [[nodiscard]] operator const T&&() const&& noexcept { return std::move(value.get()); }
+    };
+
+    template<typename T>
+    struct lazy_value<T&>
+    {
+        public:
+            std::reference_wrapper<T> value;
+
+            [[nodiscard]] operator T&() & noexcept { return value; }
+            [[nodiscard]] operator T&&() && noexcept { return std::move(value.get()); }
+    };
+
 } // namespace mltvrs::detail
 
 template<typename T>
@@ -72,25 +113,17 @@ class mltvrs::lazy<T>::promise_type : public detail::promise_base<promise_type, 
         constexpr auto final_suspend() const noexcept { return final_awaitable{this}; }
         constexpr void unhandled_exception()
         {
-            m_state = std::exception_ptr{std::current_exception()};
+            m_state.template emplace<std::exception_ptr>(std::current_exception());
         }
 
         constexpr void get() const
             requires(std::is_void_v<T>)
         {
-            return std::visit(
-                [](const auto& state) -> void
-                {
-                    using active_state = std::remove_cvref_t<decltype(state)>;
-                    if constexpr(std::same_as<active_state, std::monostate>) {
-                        throw std::logic_error{
-                            "requesting the task result when it has yet to generate one"};
-                    } else if constexpr(std::same_as<active_state, std::exception_ptr>) {
-                        std::rethrow_exception(state);
-                    } else {
-                        return;
-                    }
-                },
+            std::visit(
+                overload{
+                    [](std::monostate /* tag */) { Expects(false); },
+                    [](std::exception_ptr exception) { std::rethrow_exception(exception); },
+                    [](detail::lazy_value<T>& /* value */) {}},
                 m_state);
         }
 
@@ -98,20 +131,10 @@ class mltvrs::lazy<T>::promise_type : public detail::promise_base<promise_type, 
             requires(!std::is_void_v<T>)
         {
             return std::visit(
-                [](auto& state) -> T
-                {
-                    using active_state = std::remove_cvref_t<decltype(state)>;
-                    if constexpr(std::same_as<active_state, std::monostate>) {
-                        throw std::logic_error{
-                            "requesting the task result when it has yet to generate one"};
-                    } else if constexpr(std::same_as<active_state, std::exception_ptr>) {
-                        std::rethrow_exception(state);
-                    } else if constexpr(std::is_reference_v<T>) {
-                        return *state;
-                    } else {
-                        return std::move(state);
-                    }
-                },
+                overload{
+                    [](std::monostate /* tag */) -> T { Expects(false); },
+                    [](std::exception_ptr exception) -> T { std::rethrow_exception(exception); },
+                    [](detail::lazy_value<T>& value) -> T { return std::move(value); }},
                 m_state);
         }
 
@@ -119,22 +142,20 @@ class mltvrs::lazy<T>::promise_type : public detail::promise_base<promise_type, 
         [[nodiscard]] constexpr auto& continuation() const noexcept { return m_continuation; }
 
     private:
-        using value_storage_type = std::conditional_t<
-            std::is_void_v<T>,
-            std::type_identity<T>,
-            std::conditional_t<std::is_reference_v<T>, T*, T>>;
-        using state_type = std::variant<std::monostate, std::exception_ptr, value_storage_type>;
+        using state_type = std::variant<std::monostate, std::exception_ptr, detail::lazy_value<T>>;
 
         friend class detail::promise_base<promise_type, T>;
 
         constexpr void do_return(std::convertible_to<T> auto&& retval)
             requires(!std::is_void_v<T>)
         {
-            if constexpr(std::is_reference_v<T>) {
-                m_state = std::addressof(retval);
-            } else {
-                m_state = std::forward<decltype(retval)>(retval);
-            }
+            m_state.template emplace<detail::lazy_value<T>>(std::forward<decltype(retval)>(retval));
+        }
+
+        constexpr void do_return() noexcept
+            requires(std::is_void_v<T>)
+        {
+            m_state.template emplace<detail::lazy_value<T>>();
         }
 
         state_type              m_state        = {};
