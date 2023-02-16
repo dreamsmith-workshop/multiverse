@@ -10,22 +10,26 @@
 
 #include <catch2/catch_all.hpp>
 
-CATCH_SCENARIO("waiting on a task produces the correct result")
+CATCH_TEMPLATE_TEST_CASE(
+    "waiting on a task produces the correct result",
+    "[mltvrs][lazy][p1056]",
+    std::size_t,
+    std::vector<int>)
 {
     CATCH_GIVEN("a task that performs a calculation")
     {
-        const auto task_coro = [](int arg) -> mltvrs::lazy<int> { co_return arg; };
+        const auto task_coro = [](TestType arg) -> mltvrs::lazy<TestType> { co_return arg; };
 
         CATCH_WHEN("that task is executed once")
         {
-            const auto data = GENERATE(take(5, random(-100, 100)));
+            const auto data = GENERATE(take(5, random(0, 100)));
 
-            const auto result = mltvrs::this_thread::sync_wait(task_coro(data));
+            const auto result = mltvrs::this_thread::sync_wait(task_coro(TestType(data)));
 
             CATCH_THEN("that task becomes ready, and returns the correct value")
             {
                 CATCH_REQUIRE(result);
-                CATCH_REQUIRE(std::get<int>(*result) == data);
+                CATCH_REQUIRE(std::get<TestType>(*result) == TestType(data));
             }
         }
     }
@@ -47,10 +51,12 @@ CATCH_SCENARIO("waiting on a task produces the correct result")
 
     CATCH_GIVEN("a task that produces a reference result")
     {
-        const auto data = int{};
+        const auto data = TestType{};
 
-        const auto task_coro    = [](const int& arg) -> mltvrs::lazy<const int&> { co_return arg; };
-        const auto wrapper_coro = [](mltvrs::async::awaitable auto coro) -> mltvrs::lazy<const int*>
+        const auto task_coro = [](const TestType& arg) -> mltvrs::lazy<const TestType&>
+        { co_return arg; };
+        const auto wrapper_coro =
+            [](mltvrs::async::awaitable auto coro) -> mltvrs::lazy<const TestType*>
         { co_return std::addressof(co_await coro); };
 
         CATCH_WHEN("that task is executed")
@@ -60,7 +66,7 @@ CATCH_SCENARIO("waiting on a task produces the correct result")
             CATCH_THEN("that task becomes ready, and returns a reference to the correct object")
             {
                 CATCH_REQUIRE(result);
-                CATCH_REQUIRE(std::get<const int*>(*result) == std::addressof(data));
+                CATCH_REQUIRE(std::get<const TestType*>(*result) == std::addressof(data));
             }
         }
     }

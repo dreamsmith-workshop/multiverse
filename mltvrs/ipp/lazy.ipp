@@ -48,10 +48,7 @@ namespace mltvrs::detail {
         public:
             T value;
 
-            [[nodiscard]] operator const T&() const& noexcept { return value; }
-            [[nodiscard]] operator T&() & noexcept { return value; }
-            [[nodiscard]] operator const T&&() const&& noexcept { return std::move(value); }
-            [[nodiscard]] operator T&&() && noexcept { return std::move(value); }
+            [[nodiscard]] operator T() && noexcept { return std::move(value); }
     };
 
     template<>
@@ -60,23 +57,13 @@ namespace mltvrs::detail {
     };
 
     template<typename T>
-    struct lazy_value<const T&>
-    {
-        public:
-            std::reference_wrapper<const T> value;
-
-            [[nodiscard]] operator const T&() const& noexcept { return value; }
-            [[nodiscard]] operator const T&&() const&& noexcept { return std::move(value.get()); }
-    };
-
-    template<typename T>
     struct lazy_value<T&>
     {
         public:
             std::reference_wrapper<T> value;
 
-            [[nodiscard]] operator T&() & noexcept { return value; }
-            [[nodiscard]] operator T&&() && noexcept { return std::move(value.get()); }
+            [[nodiscard]] operator T&() const& noexcept { return value; }
+            [[nodiscard]] operator T&&() const&& noexcept { return std::move(value.get()); }
     };
 
 } // namespace mltvrs::detail
@@ -113,25 +100,13 @@ class mltvrs::lazy<T>::promise_type : public detail::promise_base<promise_type, 
             m_state.template emplace<std::exception_ptr>(std::current_exception());
         }
 
-        constexpr void get() const
-            requires(std::is_void_v<T>)
-        {
-            std::visit(
-                overload{
-                    [](std::monostate /* tag */) { Expects(false); },
-                    [](std::exception_ptr exception) { std::rethrow_exception(exception); },
-                    [](detail::lazy_value<T> /* value */) {}},
-                m_state);
-        }
-
-        [[nodiscard]] constexpr auto get() -> T
-            requires(!std::is_void_v<T>)
+        constexpr auto get() -> T
         {
             return std::visit(
                 overload{
                     [](std::monostate /* tag */) -> T { Expects(false); },
                     [](std::exception_ptr exception) -> T { std::rethrow_exception(exception); },
-                    [](detail::lazy_value<T>& value) -> T { return std::move(value); }},
+                    [](detail::lazy_value<T>& val) -> T { return static_cast<T>(std::move(val)); }},
                 m_state);
         }
 
@@ -143,16 +118,10 @@ class mltvrs::lazy<T>::promise_type : public detail::promise_base<promise_type, 
 
         friend class detail::promise_base<promise_type, T>;
 
-        constexpr void do_return(std::convertible_to<T> auto&& retval)
-            requires(!std::is_void_v<T>)
+        constexpr void do_return(std::convertible_to<T> auto&&... retval)
         {
-            m_state.template emplace<detail::lazy_value<T>>(std::forward<decltype(retval)>(retval));
-        }
-
-        constexpr void do_return() noexcept
-            requires(std::is_void_v<T>)
-        {
-            m_state.template emplace<detail::lazy_value<T>>();
+            m_state.template emplace<detail::lazy_value<T>>(
+                std::forward<decltype(retval)>(retval)...);
         }
 
         state_type              m_state        = {};
