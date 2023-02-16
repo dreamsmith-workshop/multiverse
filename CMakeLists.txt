@@ -28,8 +28,10 @@ mltvrs_configure_project(PREFIX MLTVRS REPORT_ALL TRUE)
 #####################
 
 find_package(Microsoft.GSL REQUIRED)
-find_package(stdexec       REQUIRED)
-find_package(Threads       REQUIRED)
+find_package(stdexec)
+if(stdexec_FOUND)
+    find_package(Threads REQUIRED)
+endif()
 
 mltvrs_add_install_dependencies(
     PREFIX
@@ -68,7 +70,10 @@ target_include_directories(
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/mltvrs>
 )
-target_link_libraries(mltvrs INTERFACE Microsoft.GSL::GSL STDEXEC::stdexec)
+target_link_libraries(mltvrs INTERFACE Microsoft.GSL::GSL)
+if(stdexec_FOUND)
+    target_link_libraries(mltvrs INTERFACE STDEXEC::stdexec)
+endif()
 add_library(mltvrs::mltvrs ALIAS mltvrs)
 
 #########################
