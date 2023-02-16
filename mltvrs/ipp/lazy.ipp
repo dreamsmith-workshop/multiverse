@@ -39,10 +39,7 @@ namespace mltvrs::detail {
     class promise_base<Derived, void>
     {
         public:
-            constexpr void return_void() const noexcept
-            {
-                static_cast<Derived*>(this)->do_return();
-            }
+            constexpr void return_void() noexcept { static_cast<Derived*>(this)->do_return(); }
     };
 
     template<typename T>
@@ -66,7 +63,7 @@ namespace mltvrs::detail {
     struct lazy_value<const T&>
     {
         public:
-            std::reference_wrapper<T> value;
+            std::reference_wrapper<const T> value;
 
             [[nodiscard]] operator const T&() const& noexcept { return value; }
             [[nodiscard]] operator const T&&() const&& noexcept { return std::move(value.get()); }
@@ -123,7 +120,7 @@ class mltvrs::lazy<T>::promise_type : public detail::promise_base<promise_type, 
                 overload{
                     [](std::monostate /* tag */) { Expects(false); },
                     [](std::exception_ptr exception) { std::rethrow_exception(exception); },
-                    [](detail::lazy_value<T>& /* value */) {}},
+                    [](detail::lazy_value<T> /* value */) {}},
                 m_state);
         }
 
