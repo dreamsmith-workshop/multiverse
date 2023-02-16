@@ -1,9 +1,15 @@
 #pragma once
 
+#if __has_include(<stdexec/execution.hpp>)
 #include <stdexec/execution.hpp>
+#define MLTVRS_EXECUTION_IMPL_STDEXEC true
+#else
+#define MLTVRS_EXECUTION_IMPL_STDEXEC false
+#endif
 
 namespace mltvrs::execution {
 
+#if(MLTVRS_EXECUTION_IMPL_STDEXEC)
     using stdexec::as_awaitable;
     using stdexec::as_awaitable_t;
     using stdexec::bulk;
@@ -108,16 +114,19 @@ namespace mltvrs::execution {
     using stdexec::when_all_with_variant;
     using stdexec::when_all_with_variant_t;
     using stdexec::with_awaitable_senders;
+#endif // #if(MLTVRS_EXECUTION_IMPL_STDEXEC)
 
 } // namespace mltvrs::execution
 
 namespace mltvrs::this_thread {
 
+#if(MLTVRS_EXECUTION_IMPL_STDEXEC)
     using stdexec::execute_may_block_caller;
     using stdexec::execute_may_block_caller_t;
     using stdexec::sync_wait;
     using stdexec::sync_wait_t;
     using stdexec::sync_wait_with_variant;
     using stdexec::sync_wait_with_variant_t;
+#endif // #if(MLTVRS_EXECUTION_IMPL_STDEXEC)
 
 } // namespace mltvrs::this_thread
