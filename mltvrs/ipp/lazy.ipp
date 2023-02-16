@@ -57,13 +57,13 @@ namespace mltvrs::detail {
     };
 
     template<typename T>
-    struct lazy_value<T&>
+        requires(std::is_reference_v<T>)
+    struct lazy_value<T>
     {
         public:
-            std::reference_wrapper<T> value;
+            std::reference_wrapper<std::remove_reference_t<T>> value;
 
-            [[nodiscard]] operator T&() const& noexcept { return value; }
-            [[nodiscard]] operator T&&() const&& noexcept { return std::move(value.get()); }
+            [[nodiscard]] operator T() const noexcept { return static_cast<T>(value.get()); }
     };
 
 } // namespace mltvrs::detail
