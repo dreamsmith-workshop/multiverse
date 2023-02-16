@@ -110,6 +110,10 @@ if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
     add_executable(mltvrs_test_lazy ${CMAKE_CURRENT_LIST_DIR}/mltvrs/test/test_lazy.cpp)
     target_link_libraries(mltvrs_test_lazy PRIVATE mltvrs::mltvrs mltvrs::test_main)
     add_test(NAME mltvrs_test_lazy COMMAND mltvrs_test_lazy)
+    
+    add_executable(mltvrs_test_overload ${CMAKE_CURRENT_LIST_DIR}/mltvrs/test/test_overload.cpp)
+    target_link_libraries(mltvrs_test_overload PRIVATE mltvrs::mltvrs mltvrs::test_main)
+    add_test(NAME mltvrs_test_overload COMMAND mltvrs_test_overload)
 endif()
 
 #####################
