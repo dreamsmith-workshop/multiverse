@@ -49,16 +49,21 @@ mltvrs_add_install_dependencies(
 set(
     MLTVRS_HPP
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/chrono.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/execution.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/functional.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/generator.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/interval.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/lazy.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/multiverse.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ranges.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/stop_token.hpp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/string_literal.hpp
 )
 set(
     MLTVRS_IPP
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/generator.ipp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/interval.ipp
+        ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/lazy.ipp
         ${CMAKE_CURRENT_LIST_DIR}/mltvrs/ipp/string_literal.ipp
 )
 set(MLTVRS_CPP)
