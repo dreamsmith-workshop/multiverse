@@ -28,6 +28,17 @@ mltvrs_configure_project(PREFIX MLTVRS REPORT_ALL TRUE)
 #####################
 
 find_package(Microsoft.GSL REQUIRED)
+find_package(stdexec       REQUIRED)
+find_package(Threads       REQUIRED)
+
+mltvrs_add_install_dependencies(
+    PREFIX
+        MLTVRS
+    PACKAGES
+        Microsoft.GSL
+        stdexec
+        Threads
+)
 
 ##################
 # Create Targets #
@@ -57,7 +68,7 @@ target_include_directories(
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/mltvrs>
 )
-target_link_libraries(mltvrs INTERFACE Microsoft.GSL::GSL)
+target_link_libraries(mltvrs INTERFACE Microsoft.GSL::GSL STDEXEC::stdexec)
 add_library(mltvrs::mltvrs ALIAS mltvrs)
 
 #########################
@@ -85,6 +96,10 @@ if(ENABLE_TESTING AND MLTVRS_ENABLE_TESTING)
     add_executable(mltvrs_test_generator ${CMAKE_CURRENT_LIST_DIR}/mltvrs/test/test_generator.cpp)
     target_link_libraries(mltvrs_test_generator PRIVATE mltvrs::mltvrs mltvrs::test_main)
     add_test(NAME mltvrs_test_generator COMMAND mltvrs_test_generator)
+    
+    add_executable(mltvrs_test_lazy ${CMAKE_CURRENT_LIST_DIR}/mltvrs/test/test_lazy.cpp)
+    target_link_libraries(mltvrs_test_lazy PRIVATE mltvrs::mltvrs mltvrs::test_main)
+    add_test(NAME mltvrs_test_lazy COMMAND mltvrs_test_lazy)
 endif()
 
 #####################

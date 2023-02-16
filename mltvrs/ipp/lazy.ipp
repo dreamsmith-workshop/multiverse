@@ -1,0 +1,191 @@
+#include <exception>
+#include <stdexcept>
+#include <utility>
+#include <variant>
+
+namespace mltvrs::detail {
+
+    template<typename T>
+    struct is_coroutine_handle : public std::false_type
+    {
+    };
+
+    template<typename PromiseType>
+    struct is_coroutine_handle<std::coroutine_handle<PromiseType>> : public std::true_type
+    {
+    };
+
+    template<typename T>
+    inline constexpr bool is_coroutine_handle_v = is_coroutine_handle<T>::value;
+
+    template<typename T>
+    concept coro_handle = is_coroutine_handle_v<T>;
+
+    template<typename Derived, typename T>
+    class promise_base
+    {
+        public:
+            constexpr void return_value(std::convertible_to<T> auto&& retval)
+            {
+                static_cast<Derived*>(this)->do_return(std::forward<decltype(retval)>(retval));
+            }
+    };
+
+    template<typename Derived>
+    class promise_base<Derived, void>
+    {
+        public:
+            constexpr void return_void() const noexcept
+            {
+                static_cast<Derived*>(this)->do_return();
+            }
+    };
+
+} // namespace mltvrs::detail
+
+template<typename T>
+class mltvrs::lazy<T>::final_awaitable
+{
+    public:
+        const promise_type* prom;
+
+        constexpr bool await_ready() const noexcept { return false; }
+
+        constexpr auto await_suspend(detail::coro_handle auto /* awaiter */) const noexcept
+        {
+            return prom->continuation();
+        }
+
+        constexpr void await_resume() const noexcept {}
+};
+
+template<typename T>
+class mltvrs::lazy<T>::promise_type : public detail::promise_base<promise_type, T>
+{
+    public:
+        [[nodiscard]] constexpr auto get_return_object() noexcept
+        {
+            return lazy{std::coroutine_handle<promise_type>::from_promise(*this)};
+        }
+
+        constexpr auto initial_suspend() const { return std::suspend_always{}; }
+        constexpr auto final_suspend() const noexcept { return final_awaitable{this}; }
+        constexpr void unhandled_exception()
+        {
+            m_state = std::exception_ptr{std::current_exception()};
+        }
+
+        constexpr void get() const
+            requires(std::is_void_v<T>)
+        {
+            return std::visit(
+                [](const auto& state) -> void
+                {
+                    using active_state = std::remove_cvref_t<decltype(state)>;
+                    if constexpr(std::same_as<active_state, std::monostate>) {
+                        throw std::logic_error{
+                            "requesting the task result when it has yet to generate one"};
+                    } else if constexpr(std::same_as<active_state, std::exception_ptr>) {
+                        std::rethrow_exception(state);
+                    } else {
+                        return;
+                    }
+                },
+                m_state);
+        }
+
+        [[nodiscard]] constexpr auto get() -> T
+            requires(!std::is_void_v<T>)
+        {
+            return std::visit(
+                [](auto& state) -> T
+                {
+                    using active_state = std::remove_cvref_t<decltype(state)>;
+                    if constexpr(std::same_as<active_state, std::monostate>) {
+                        throw std::logic_error{
+                            "requesting the task result when it has yet to generate one"};
+                    } else if constexpr(std::same_as<active_state, std::exception_ptr>) {
+                        std::rethrow_exception(state);
+                    } else if constexpr(std::is_reference_v<T>) {
+                        return *state;
+                    } else {
+                        return std::move(state);
+                    }
+                },
+                m_state);
+        }
+
+        [[nodiscard]] constexpr auto& continuation() noexcept { return m_continuation; }
+        [[nodiscard]] constexpr auto& continuation() const noexcept { return m_continuation; }
+
+    private:
+        using value_storage_type = std::conditional_t<
+            std::is_void_v<T>,
+            std::type_identity<T>,
+            std::conditional_t<std::is_reference_v<T>, T*, T>>;
+        using state_type = std::variant<std::monostate, std::exception_ptr, value_storage_type>;
+
+        friend class detail::promise_base<promise_type, T>;
+
+        constexpr void do_return(std::convertible_to<T> auto&& retval)
+            requires(!std::is_void_v<T>)
+        {
+            if constexpr(std::is_reference_v<T>) {
+                m_state = std::addressof(retval);
+            } else {
+                m_state = std::forward<decltype(retval)>(retval);
+            }
+        }
+
+        state_type              m_state        = {};
+        std::coroutine_handle<> m_continuation = nullptr;
+};
+
+template<typename T>
+class mltvrs::lazy<T>::awaitable_type
+{
+    public:
+        explicit constexpr awaitable_type(std::coroutine_handle<promise_type> coro) noexcept
+            : m_coroutine{coro}
+        {
+        }
+
+        constexpr bool await_ready() const noexcept { return !m_coroutine || m_coroutine.done(); }
+
+        constexpr auto await_suspend(std::coroutine_handle<> awaiter) noexcept
+        {
+            m_coroutine.promise().continuation() = awaiter;
+            return m_coroutine;
+        }
+
+        constexpr auto await_resume() const noexcept -> T { return m_coroutine.promise().get(); }
+
+    private:
+        std::coroutine_handle<promise_type> m_coroutine;
+};
+
+template<typename T>
+constexpr mltvrs::lazy<T>::lazy(std::coroutine_handle<promise_type> coro) noexcept
+    : m_coroutine{coro}
+{
+}
+
+template<typename T>
+constexpr mltvrs::lazy<T>::lazy(lazy&& rhs) noexcept
+    : m_coroutine{std::exchange(rhs.m_coroutine, nullptr)}
+{
+}
+
+template<typename T>
+mltvrs::lazy<T>::~lazy() noexcept
+{
+    if(m_coroutine) {
+        m_coroutine.destroy();
+    }
+}
+
+template<typename T>
+constexpr auto mltvrs::lazy<T>::operator co_await() const noexcept -> awaitable_type
+{
+    return awaitable_type{m_coroutine};
+}

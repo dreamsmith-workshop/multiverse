@@ -35,17 +35,4 @@ namespace mltvrs::async {
     template<awaitable T>
     using await_result_t = decltype(std::declval<awaited_object_t<T>>().await_resume());
 
-    template<coroutine Coroutine>
-    struct coroutine_traits : public std::coroutine_traits<Coroutine>
-    {
-        public:
-            using coroutine_type = Coroutine;
-            using promise_type   = promise_type_t<coroutine_type>;
-
-            [[nodiscard]] static constexpr auto handle_of(const coroutine_type& coro) noexcept
-                -> std::coroutine_handle<promise_type>;
-            [[nodiscard]] static constexpr auto handle_of(coroutine_type& coro) noexcept
-                -> std::coroutine_handle<promise_type>;
-    };
-
 } // namespace mltvrs::async
