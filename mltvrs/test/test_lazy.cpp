@@ -22,7 +22,7 @@ CATCH_TEMPLATE_TEST_CASE(
 
         CATCH_WHEN("that task is executed once")
         {
-            const auto data = GENERATE(take(5, random(0, 100)));
+            const auto data = GENERATE(take(5, random(std::size_t{}, std::size_t{100})));
 
             const auto result = mltvrs::this_thread::sync_wait(task_coro(TestType(data)));
 
