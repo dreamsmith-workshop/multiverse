@@ -19,7 +19,7 @@ namespace mltvrs {
      * @tparam V   An optional override type for the generator iterator value type.
      */
     template<typename Ref, typename V = void>
-    class generator : public std::ranges::view_interface<generator<Ref, V>>
+    class [[nodiscard]] generator : public std::ranges::view_interface<generator<Ref, V>>
     {
         private:
             using value     = std::conditional_t<std::is_void_v<V>, std::remove_cvref_t<Ref>, V>;
