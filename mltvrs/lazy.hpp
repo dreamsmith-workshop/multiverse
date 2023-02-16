@@ -4,6 +4,14 @@
 
 namespace mltvrs {
 
+    /**
+     * @brief A lazy task coroutine that generates a single value.
+     *
+     * This template implements `std::lazy` from the ISO WG21 proposal
+     * [`P1056R1`](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1056r1.html).
+     *
+     * @tparam T The type of value the task lazily generates.
+     */
     template<typename T>
     class [[nodiscard]] lazy
     {
